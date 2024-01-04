@@ -2,14 +2,17 @@ package agh.ics.oop.model;
 
 public class Grass {
     private final Vector2d position;
-    private final int Energy;
-    public Grass(Vector2d position, int energy) {
+    private int Energy;
+    public void setEnergy(int energy){
+        Energy = energy;
+    }
+    public Grass(Vector2d position) {
         this.position = position;
-        this.Energy = energy;
     }
     public Vector2d getPosition() {
         return position;
     }
-
-
+    public int getEnergy() {
+        return Energy;
+    }
 }

@@ -6,29 +6,36 @@ import java.util.List;
 public class Simulation implements Runnable{
     private final List<Animal> AnimalList = new ArrayList<>();
     private final RectangularMap map; //    private final WorldMap map;
-    private final int grassCount;
 
-    public Simulation(int startingNumberOfAnimals, int startingEnergy , int genomLenght, RectangularMap map, int grassCount) {
+    private Arguments args;
+    public Simulation(Arguments args, RectangularMap map) {
         this.map = map;
-        this.grassCount = grassCount;
+        this.args = args;
         // konstruktor symulacji
 
-        for (int i=0; i<startingNumberOfAnimals; i++){
-            Animal animal = new Animal(map.getWidth(),map.getHeight(), startingEnergy, genomLenght);
+        for (int i=0; i<args.animalInitNumber(); i++){
+            Animal animal = new Animal(map.getWidth(),map.getHeight(), args.animalEnergy(), args.genomLenght());
             AnimalList.add(animal);
             map.placeNewAnimal(animal);
         }
-        map.placeNewGrass(grassCount);
+        map.placeNewGrass(args.grassAtStart());
 
         //...
+
+
+
     }
     public void run(){
-        //Usunięcie martwych zwierzaków z mapy.
-//        Skręt i przemieszczenie każdego zwierzaka.
-//        Konsumpcja roślin, na których pola weszły zwierzaki.
-//        Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu.
-//        Wzrastanie nowych roślin na wybranych polach mapy.
+//        1. Usunięcie martwych zwierzaków z mapy.
 
+//        2. Skręt i przemieszczenie każdego zwierzaka.
+
+//        3. Konsumpcja roślin, na których pola weszły zwierzaki.
+
+//        4. Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu.
+
+//        5. Wzrastanie nowych roślin na wybranych polach mapy.
+        map.placeNewGrass(args.grassEachDay());
     }
 
 }

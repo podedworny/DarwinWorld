@@ -1,6 +1,7 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.SimulationApp;
+import agh.ics.oop.model.Arguments;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,19 +19,24 @@ import java.util.function.UnaryOperator;
 
 public class MenuPresenter implements Initializable {
 
-    public ComboBox<String> mapType;
     public TextField mapWidth;
     public TextField mapHeight;
+    public ComboBox<String> mapType;
+    public TextField grassAtStart;
     public TextField grassEnergy;
-    public TextField copulationEnergy;
+    public TextField grassEachDay;
+    public TextField animalInitNumber;
     public TextField animalEnergy;
     public TextField energyCost;
-    public TextField animalInitNumber;
-    public TextField grassEachDay;
+    public TextField copulationEnergy;
+    public TextField energyTaken;
+    public TextField minMut;
+    public TextField maxMut;
+    public TextField genomLen;
+    public ComboBox<String> variant;
     public TextField coolDown;
     public Button commitButton;
-    public TextField grassAtStart;
-    public TextField EnergyTaken;
+
     @FXML
     private javafx.scene.control.Label waterMapLabel;
     @FXML
@@ -55,9 +61,19 @@ public class MenuPresenter implements Initializable {
         int grassEachD = Integer.parseInt(grassEachDay.getText());
         int coolD = Integer.parseInt(coolDown.getText());
 
-        SimulationApp.simulationWindow(mapW, mapH, grassE,
-                                    copulationE, animalE,energyC,
-                                    animalInitN, grassEachD, coolD);
+
+        int grassStart = Integer.parseInt(grassAtStart.getText());
+        int energyT = Integer.parseInt(energyTaken.getText());
+        int minM = Integer.parseInt(minMut.getId());
+        int maxM = Integer.parseInt(maxMut.getText());
+        int genomL = Integer.parseInt(genomLen.getText());
+        String var = variant.getValue();
+
+        Arguments args = new Arguments(mapa,mapW,mapH, grassE, copulationE,
+                animalE, energyC, animalInitN, grassEachD, coolD,grassStart,
+                energyT, minM, maxM, genomL, var, waterNumber);
+
+        SimulationApp.simulationWindow(args);
     }
     // to co ponizej to 90% chatgpt, ale dziala
     public void initialize(URL location, ResourceBundle resources) {
@@ -82,6 +98,12 @@ public class MenuPresenter implements Initializable {
         animalInitNumber.setTextFormatter(createIntegerTextFormatter(10, 1000));
         grassEachDay.setTextFormatter(createIntegerTextFormatter(5, 1000));
         coolDown.setTextFormatter(createIntegerTextFormatter(20, 1000));
+        grassAtStart.setTextFormatter(createIntegerTextFormatter(20, 1000));
+        energyTaken.setTextFormatter(createIntegerTextFormatter(5, 1000));
+        minMut.setTextFormatter(createIntegerTextFormatter(5, 1000));
+        maxMut.setTextFormatter(createIntegerTextFormatter(5, 1000));
+        genomLen.setTextFormatter(createIntegerTextFormatter(5, 1000));
+
     }
 
     private TextFormatter<Integer> createIntegerTextFormatter(int initialValue, int upperLimit) {

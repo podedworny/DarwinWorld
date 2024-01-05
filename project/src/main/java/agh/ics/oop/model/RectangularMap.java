@@ -3,12 +3,14 @@ package agh.ics.oop.model;
 import java.util.*;
 
 public class RectangularMap {
+    private final Arguments args;
     private final int width;
     private final int height;
     protected final Map<Vector2d, TreeSet<Animal>> animals = new HashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
 
-    public RectangularMap(int width, int height) {
+    public RectangularMap(int width, int height, Arguments args) {
+        this.args = args;
         this.width = width;
         this.height = height;
     }
@@ -53,7 +55,7 @@ public class RectangularMap {
                 y = setPositionY();
                 position = new Vector2d(x, y);
             }
-            Grass grass = new Grass(position);
+            Grass grass = new Grass(position,args.grassEnergy());
             grasses.put(position,grass);
         }
     }
@@ -74,13 +76,58 @@ public class RectangularMap {
     public void removeGrass(Vector2d vector2d){
         grasses.remove(vector2d);
     }
-    public void animalCopulation(Animal mother, Animal father){
-        //zakładam ze juz sprawdzono czy mają energie na sex i są na tym samym polu
-        MapDirection[] moves = Genom.childMoves(mother,father);//metoda do stworzenia genu dziecka
-//        Animal child = new Animal(mother.getPosition(),/*energia dzieciaka*/,new Genom(moves));
 
+
+    public Animal animalsCopulation(Animal mother, Animal father){
+        //zakładam ze juz sprawdzono czy mają energie na sex i są na tym samym polu
+        MapDirection[] moves = childMoves(mother,father);
+        Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves));
+        placeNewAnimal(child);
+        mother.decreaseEnergy(args.energyTaken());
+        father.decreaseEnergy(args.energyTaken());
+        mother.newKid();
+        father.newKid();
+        return child;  // wstępnie zwracamy dziecko, jesli nie bedzie potrzebne to zmienimy na voida
     }
 
+    public static MapDirection[] childMoves(Animal an1, Animal an2){ //metoda do stworzenia genu dziecka
+
+        // ręki sobie za to nie dam uciąć
+
+        Random random = new Random();
+        MapDirection[] newMoves = new MapDirection[an1.getGenom().getMoves().length];
+        MapDirection[] moves1 = an1.getGenom().getMoves();
+        MapDirection[] moves2 = an2.getGenom().getMoves();
+        int en1 = an1.getEnergy();
+        int en2 = an2.getEnergy();
+
+        int side = random.nextInt(2);
+
+        if (en1 > en2) {
+            int ind = (an1.getGenom().getMoves().length * en1 / (en1 + en2));
+            if (side == 0) { // lewa strona en1
+                System.arraycopy(moves1, 0, newMoves, 0, ind);
+                System.arraycopy(moves2, ind, newMoves, ind, moves1.length - ind);
+            } else { //prawa strona en1
+                System.arraycopy(moves2, 0, newMoves, 0, ind);
+                System.arraycopy(moves1, ind, newMoves, ind, moves1.length - ind);
+            }
+        }
+        else{
+            int ind = (an1.getGenom().getMoves().length * en2 / (en1 + en2));
+            if (side == 0) { // lewa strona en2
+                System.arraycopy(moves2, 0, newMoves, 0, ind);
+                System.arraycopy(moves1, ind, newMoves, ind, moves1.length - ind);
+            } else { //prawa strona en2
+                System.arraycopy(moves1, 0, newMoves, 0, ind);
+                System.arraycopy(moves2, ind, newMoves, ind, moves1.length - ind);
+            }
+        }
+
+        // mutacje trzeba zrobic
+
+        return newMoves;
+    }
 
 // public void jedzenie_trawki
 

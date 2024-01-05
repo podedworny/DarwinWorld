@@ -9,7 +9,7 @@ public class Animal implements Comparable<Animal>{
     private final Genom genom; //nasz genom
     private int energy; //poziom energii
     private int age; //wiek
-    private int childrencount; // liczba dzieci
+    private int childrenCount; // liczba dzieci
 
     public Animal(Vector2d pos, int energy, Genom genom){
         MapDirection[] directions = MapDirection.values();
@@ -19,7 +19,7 @@ public class Animal implements Comparable<Animal>{
         this.energy = energy; // ilosc energii i jak wyglada genom tworzymy w sex-metodzie
         this.genom = genom;
         age = 0;
-        childrencount = 0;
+        childrenCount = 0;
     }
 
     public Animal(int width, int height, int energy, int genomLen){ // konstruktor tylko do stworzenia animali na poczatku
@@ -30,7 +30,7 @@ public class Animal implements Comparable<Animal>{
         this.energy = energy;
         this.genom = new Genom(genomLen);
         age = 0;
-        childrencount = 0;
+        childrenCount = 0;
     }
 
     public void move(){
@@ -52,8 +52,15 @@ public class Animal implements Comparable<Animal>{
         return Comparator
                 .comparingInt((Animal a) -> a.energy)
                 .thenComparingInt(a -> a.age)
-                .thenComparingInt(a -> a.childrencount)
+                .thenComparingInt(a -> a.childrenCount)
                 .thenComparing(a -> new Random().nextInt());
+    }
+
+    public void decreaseEnergy(int energyLevel){
+        energy -= energyLevel;
+    }
+    public void newKid(){
+        childrenCount++;
     }
 
     @Override

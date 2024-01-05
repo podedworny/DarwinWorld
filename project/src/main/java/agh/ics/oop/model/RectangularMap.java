@@ -74,6 +74,14 @@ public class RectangularMap {
     public void removeGrass(Vector2d vector2d){
         grasses.remove(vector2d);
     }
+
+    public void removeAnimal(Animal animal){
+        Vector2d position = animal.getPosition();
+        if (animals.get(position).size() == 1)
+            animals.remove(position);
+        else
+            animals.get(position).remove(animal);
+    }
     public void animalCopulation(Animal mother, Animal father){
         //zakładam ze juz sprawdzono czy mają energie na sex i są na tym samym polu
         MapDirection[] moves = Genom.childMoves(mother,father);//metoda do stworzenia genu dziecka

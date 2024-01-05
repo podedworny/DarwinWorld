@@ -84,32 +84,39 @@
 
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Energy taken to reproduce: "/>
-                <TextField fx:id="EnergyTaken" />
+                <TextField fx:id="energyTaken" />
             </HBox>
 
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Minimum number of mutations: "/>
-                <TextField fx:id="MinMut" />
+                <TextField fx:id="minMut" />
             </HBox>
 
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Maximum number of mutations: "/>
-                <TextField fx:id="MaxMut" />
+                <TextField fx:id="maxMut" />
+            </HBox>
+<!--            wariantu mutacji nie ma bo chyba nie musi byc-->
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Genom lenght: "/>
+                <TextField fx:id="genomLen" />
             </HBox>
 
-<!--            <Label text="Energy properties" alignment="CENTER" style="-fx-font-weight: bold;"/>-->
-
-
-
-
-
-
-
-
-            <Label text="Spawn properties" alignment="CENTER" style="-fx-font-weight: bold;"/>
-
-
-
+            <HBox alignment="CENTER" spacing="10" >
+                <Label text="Behavior variant: "/>
+                <ComboBox fx:id="variant">
+                    <value>
+                        <String fx:value="Default" />
+                    </value>
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Default" />
+                            <String fx:value="Variant - 3" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </HBox>
 
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Refresh time (ms): "/>

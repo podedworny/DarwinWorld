@@ -1,5 +1,6 @@
 package agh.ics.oop;
 
+import agh.ics.oop.model.Arguments;
 import agh.ics.oop.presenter.SimulationPresenter;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -18,17 +19,12 @@ public class SimulationApp extends Application {
         primaryStage.show();
     }
 
-    public static void simulationWindow(int mapWidth, int mapHeight,
-                                        int grassEnergy, int copulationEnergy,
-                                        int animalEnergy, int energyCost,
-                                        int animalInitNumber, int grassEachDay,
-                                        int coolDown) throws Exception {
+    public static void simulationWindow(Arguments args) throws Exception {
         Stage primaryStage = new Stage();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(SimulationApp.class.getClassLoader().getResource("simulation.fxml"));
         BorderPane viewRoot = loader.load();
-        SimulationPresenter.setArguments(mapWidth, mapHeight, grassEnergy, copulationEnergy,
-                                        animalEnergy, energyCost, animalInitNumber, grassEachDay, coolDown);
+        SimulationPresenter.setArguments(args);
         SimulationPresenter presenter = loader.getController();
 
         // akcje wywołania mapy observera itp

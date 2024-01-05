@@ -54,7 +54,15 @@ public class Genom {
 //        }
         return newMoves;
     }
-
+    public void nextIndex(){  //wariant 3
+        Random random = new Random();
+        if(random.nextInt(10)<8){
+            index++;
+        }
+        else{
+            index = random.nextInt(moves.length);
+        }
+    }
     public int getIndex() {
         return index;
     }

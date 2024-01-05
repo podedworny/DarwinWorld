@@ -31,7 +31,10 @@
                 </ComboBox>
             </HBox>
 
-            <!--Jeszcze chyba powinien byc parametr dla przypadku z wodą -->
+            <HBox alignment="CENTER" spacing="10">
+                <Label fx:id="waterMapLabel" text="Water Field number:  " visible="false"/>
+                <TextField fx:id="waterMapTextField" visible="false"/>
+            </HBox>
 
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Map width: "/>
@@ -42,8 +45,6 @@
                 <Label text="Map height: "/>
                 <TextField fx:id="mapHeight" />
             </HBox>
-
-            <!--ustawienia dzungli ewentualnie-->
 
             <Label text="Energy properties" alignment="CENTER" style="-fx-font-weight: bold;"/>
             <HBox alignment="CENTER" spacing="10">
@@ -69,7 +70,7 @@
             <Label text="Spawn properties" alignment="CENTER" style="-fx-font-weight: bold;"/>
 
             <HBox alignment="CENTER" spacing="10">
-                <Label text="Animals numbers at start: "/>
+                <Label text="Animals number at start: "/>
                 <TextField fx:id="animalInitNumber" />
             </HBox>
 

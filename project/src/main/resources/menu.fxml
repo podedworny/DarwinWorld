@@ -16,6 +16,16 @@
     <center>
         <VBox alignment="CENTER" spacing="10">
             <Label text="Map properties" alignment="CENTER" style="-fx-font-weight: bold;"/>
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Map width: "/>
+                <TextField fx:id="mapWidth" />
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Map height: "/>
+                <TextField fx:id="mapHeight" />
+            </HBox>
+
             <HBox alignment="CENTER" spacing="10" >
                 <Label text="Map type:"/>
                 <ComboBox fx:id="mapType">
@@ -31,29 +41,30 @@
                 </ComboBox>
             </HBox>
 
-            <!--Jeszcze chyba powinien byc parametr dla przypadku z wodą -->
 
             <HBox alignment="CENTER" spacing="10">
-                <Label text="Map width: "/>
-                <TextField fx:id="mapWidth" />
+                <Label fx:id="waterMapLabel" text="Water Field number:  " visible="false"/>
+                <TextField fx:id="waterMapTextField" visible="false"/>
             </HBox>
 
             <HBox alignment="CENTER" spacing="10">
-                <Label text="Map height: "/>
-                <TextField fx:id="mapHeight" />
+                <Label text="Number of grass at start: "/>
+                <TextField fx:id="grassAtStart" />
             </HBox>
 
-            <!--ustawienia dzungli ewentualnie-->
-
-            <Label text="Energy properties" alignment="CENTER" style="-fx-font-weight: bold;"/>
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Grass energy profit:"/>
                 <TextField fx:id="grassEnergy" />
             </HBox>
 
             <HBox alignment="CENTER" spacing="10">
-                <Label text="Minimum energy to copulation: "/>
-                <TextField fx:id="copulationEnergy" />
+                <Label text="Grass spawned in each day: "/>
+                <TextField fx:id="grassEachDay" />
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Animals number at start: "/>
+                <TextField fx:id="animalInitNumber" />
             </HBox>
 
             <HBox alignment="CENTER" spacing="10">
@@ -66,17 +77,39 @@
                 <TextField fx:id="energyCost" />
             </HBox>
 
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Minimum energy to copulation: "/>
+                <TextField fx:id="copulationEnergy" />
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Energy taken to reproduce: "/>
+                <TextField fx:id="EnergyTaken" />
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Minimum number of mutations: "/>
+                <TextField fx:id="MinMut" />
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Maximum number of mutations: "/>
+                <TextField fx:id="MaxMut" />
+            </HBox>
+
+<!--            <Label text="Energy properties" alignment="CENTER" style="-fx-font-weight: bold;"/>-->
+
+
+
+
+
+
+
+
             <Label text="Spawn properties" alignment="CENTER" style="-fx-font-weight: bold;"/>
 
-            <HBox alignment="CENTER" spacing="10">
-                <Label text="Animals numbers at start: "/>
-                <TextField fx:id="animalInitNumber" />
-            </HBox>
 
-            <HBox alignment="CENTER" spacing="10">
-                <Label text="Grass spawned in each day: "/>
-                <TextField fx:id="grassEachDay" />
-            </HBox>
+
 
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Refresh time (ms): "/>

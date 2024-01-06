@@ -37,7 +37,13 @@ public class Animal implements Comparable<Animal>{
         MapDirection[] genomTab = genom.getMoves();
         int ind = genom.getIndex();
         energy -= energyCost; // zmniejszanie energii
-        Vector2d newPosition = position.add(genomTab[ind].toUnitVector()); //(zmiana jego pozycji)
+
+        for (int i=0; i<genomTab[ind].getI();i++){  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
+            orientation = orientation.next();
+        }
+
+        Vector2d newPosition = position.add(orientation.toUnitVector()); //(zmiana jego pozycji)
+
         if (newPosition.getX() == -1)
             newPosition = new Vector2d(map.args.mapWidth()-1, newPosition.getY());
         else if (newPosition.getX() == map.args.mapWidth())
@@ -54,10 +60,6 @@ public class Animal implements Comparable<Animal>{
         if (map.canMoveTo(newPosition)) // ustawianie nowej pozycji jezeli git
             position = newPosition; // to w sumie dla rMap sie wydaje bez sensu, bo wyzej ustawilismy tak ze zawsze musi byc git
                                     // ale dla wody bedzie przydatne, najwyzej sie zmieni
-
-        for (int i=0; i<genomTab[ind].getI();i++){  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
-            orientation = orientation.next();
-        } // trzeba sprawdzac czy wychodzi poza mape a jak tak to zmienic jego orientacje lub pozycje
     }
 
     public Vector2d getPosition(){
@@ -77,6 +79,10 @@ public class Animal implements Comparable<Animal>{
     }
     public void newKid(){
         childrenCount++;
+    }
+
+    public void eatGrass(int grassEnergy){
+        energy += grassEnergy;
     }
 
     @Override

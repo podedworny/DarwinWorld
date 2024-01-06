@@ -92,7 +92,7 @@ public class RectangularMap {
         else
             animals.get(position).remove(animal);
     }
-    public void animalCopulation(Animal mother, Animal father){
+    public Animal animalCopulation(Animal mother, Animal father){
         //zakładam ze juz sprawdzono czy mają energie na sex i są na tym samym polu
         MapDirection[] moves = childMoves(mother,father);
         Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves));
@@ -101,7 +101,24 @@ public class RectangularMap {
         father.decreaseEnergy(args.energyTaken());
         mother.newKid();
         father.newKid();
-        //return child;  // wstępnie zwracamy dziecko, jesli nie bedzie potrzebne to zmienimy na voida
+        return child;  // wstępnie zwracamy dziecko, jesli nie bedzie potrzebne to zmienimy na voida
+    }
+
+    public void reproduce(){
+        // biore wszystkie pozycje na ktorych sa zwierzaki
+        // i dla kazdego pola biore dwojke (jezeli istnieje i ma energie) na sex
+        // zwracam zwierzaka i klade go na plansze
+        Set<Vector2d> animalsPositions = animals.keySet();
+        for (Vector2d position : animalsPositions){
+            if (animals.get(position).size()>1) {
+                List<Animal> animalPos = new ArrayList<>(animals.get(position));
+                for (int i = 0; i < animalPos.size(); i += 2) { // to tez do przepisania ale niech bedzie poki co
+                    if (animalPos.get(i + 1) != null && animalPos.get(i).getEnergy()>args.energyTaken() && animalPos.get(i+1).getEnergy()>args.energyTaken()) {
+                        placeAnimal(animalCopulation(animalPos.get(i), animalPos.get(i + 1)));
+                    }
+                }
+            }
+        }
     }
 
     public static MapDirection[] childMoves(Animal an1, Animal an2){ //metoda do stworzenia genu dziecka
@@ -143,7 +160,15 @@ public class RectangularMap {
         return newMoves;
     }
 
-// public void jedzenie_trawki
+    public void eatGrass(){
+        Set<Vector2d> grassPositions = grasses.keySet();
+        for (Vector2d position : grassPositions){
+            if (animals.get(position) != null){
+                animals.get(position).first().eatGrass(args.grassEnergy());
+                removeGrass(position);
+            }
+        }
+    }
 
 }
 

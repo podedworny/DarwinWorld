@@ -26,17 +26,16 @@ public class Simulation implements Runnable{
     }
     public void run(){
         while (true) {
+//        1. Usunięcie martwych zwierzaków z mapy.
+            deleteDeadAnimals();
 //        2. Skręt i przemieszczenie każdego zwierzaka.
             moveAnimals();
 //        3. Konsumpcja roślin, na których pola weszły zwierzaki.
-            eatGrass();
+            map.eatGrass();
 //        4. Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu.
-            reproduce();
+            map.reproduce();
 //        5. Wzrastanie nowych roślin na wybranych polach mapy.
             map.placeNewGrass(args.grassEachDay());
-//        1. Usunięcie martwych zwierzaków z mapy. <-- usuwanie powinno byc niby pierwsze, ale jak zaczynamy symulacje
-//        od pierwszego etapu to najpierw sie ruszaja itd
-            deleteDeadAnimals();
             try {
                 Thread.sleep(args.coolDown());
             }
@@ -58,14 +57,6 @@ public class Simulation implements Runnable{
     private void moveAnimals(){
         for (Animal animal : animalList)
             map.move(animal);
-    }
-
-    private void eatGrass(){
-        //
-    }
-
-    private void reproduce(){
-        //
     }
 }
 

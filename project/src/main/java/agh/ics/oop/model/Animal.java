@@ -35,16 +35,19 @@ public class Animal implements Comparable<Animal>, WorldElement{
     }
 
     public void move(int energyCost, RectangularMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
+
+        energy -= energyCost; // zmniejszanie energii
+        MapDirection[] mapValues = MapDirection.values();
         MapDirection[] genomTab = genom.getMoves();
         int ind = genom.getIndex();
-        energy -= energyCost; // zmniejszanie energii
 
-        for (int i=0; i<genomTab[ind].getI();i++){  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
+        for (int i=0; i<mapValues[genomTab[ind].getI()].getI();i++){  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
             orientation = orientation.next();
         }
 
         Vector2d newPosition = position.add(orientation.toUnitVector()); //(zmiana jego pozycji)
 
+        genom.nextIndexDefault(); // na ten moment takie bedzie bo moze byc jeszcze wariant
         if (newPosition.getX() == -1)
             newPosition = new Vector2d(map.args.mapWidth()-1, newPosition.getY());
         else if (newPosition.getX() == map.args.mapWidth())
@@ -71,7 +74,6 @@ public class Animal implements Comparable<Animal>, WorldElement{
     public boolean isAt(Vector2d position) {
         return this.position.equals(position);
     }
-
 
     public void decreaseEnergy(int energyLevel){
         energy -= energyLevel;

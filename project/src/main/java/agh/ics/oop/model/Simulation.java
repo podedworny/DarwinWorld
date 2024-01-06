@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Simulation implements Runnable{
-    private final List<Animal> animalList = new LinkedList<>(); //linked list bo do usuwania umierajacych przechodzimy po nich i usuwamy w O(1)
+    private static final List<Animal> animalList = new LinkedList<>(); //linked list bo do usuwania umierajacych przechodzimy po nich i usuwamy w O(1)
     private final RectangularMap map; //    private final WorldMap map;
     private final Arguments args;
 
@@ -28,6 +28,10 @@ public class Simulation implements Runnable{
         while (true) {
 //        1. Usunięcie martwych zwierzaków z mapy.
             deleteDeadAnimals();
+            System.out.println(map);
+            System.out.println(animalList.toArray().length);
+            System.out.println(animalList.get(0).getGenom().getIndex());
+            System.out.println(animalList.get(0).getPosition().toString());
 //        2. Skręt i przemieszczenie każdego zwierzaka.
             moveAnimals();
 //        3. Konsumpcja roślin, na których pola weszły zwierzaki.
@@ -37,12 +41,15 @@ public class Simulation implements Runnable{
 //        5. Wzrastanie nowych roślin na wybranych polach mapy.
             map.placeNewGrass(args.grassEachDay());
             try {
-                Thread.sleep(2000);
+                Thread.sleep(20);
             }
             catch (Exception ignored){}
-        System.out.println(map);
-        }
 
+        }
+    }
+
+    public static void addNewAnimal(Animal animal){
+        animalList.add(animal);
     }
 
     private void deleteDeadAnimals(){

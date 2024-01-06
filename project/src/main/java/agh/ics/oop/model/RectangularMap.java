@@ -71,6 +71,7 @@ public class RectangularMap {
         if (animals.get(animal.getPosition()).contains(animal)){
             removeAnimal(animal);
             animal.move(args.energyCost(), this);
+
             placeAnimal(animal);
         }
     }
@@ -120,8 +121,10 @@ public class RectangularMap {
             if (animals.get(position).size()>1) {
                 List<Animal> animalPos = new ArrayList<>(animals.get(position));
                 for (int i = 0; i < animalPos.size(); i += 2) { // to tez do przepisania ale niech bedzie poki co
-                    if (animalPos.get(i + 1) != null && animalPos.get(i).getEnergy()>args.energyTaken() && animalPos.get(i+1).getEnergy()>args.energyTaken()) {
-                        placeAnimal(animalCopulation(animalPos.get(i), animalPos.get(i + 1)));
+                    if (i + 1 < animalPos.size()  && animalPos.get(i).getEnergy()>args.energyTaken() && animalPos.get(i+1).getEnergy()>args.energyTaken()) {
+                        Animal kid = animalCopulation(animalPos.get(i), animalPos.get(i + 1));
+                        placeAnimal(kid);
+                        Simulation.addNewAnimal(kid);
                     }
                 }
             }

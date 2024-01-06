@@ -33,12 +33,28 @@ public class Animal implements Comparable<Animal>{
         childrenCount = 0;
     }
 
-    public void move(){
+    public void move(int energyCost, RectangularMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
         MapDirection[] genomTab = genom.getMoves();
         int ind = genom.getIndex();
-        //energy--; // zmniejszanie energii
-        // canMoveTo na to pole
-        position.add(genomTab[ind].toUnitVector()); //(zmiana jego pozycji)
+        energy -= energyCost; // zmniejszanie energii
+        Vector2d newPosition = position.add(genomTab[ind].toUnitVector()); //(zmiana jego pozycji)
+        if (newPosition.getX() == -1)
+            newPosition = new Vector2d(map.args.mapWidth()-1, newPosition.getY());
+        else if (newPosition.getX() == map.args.mapWidth())
+            newPosition = new Vector2d(0, newPosition.getY());
+        else if (newPosition.getY() == -1) {
+            newPosition = new Vector2d(newPosition.getX(), 0);
+            orientation = orientation.opposite();
+        }
+        else if (newPosition.getY() == map.args.mapHeight()){
+            newPosition = new Vector2d(newPosition.getX(), map.args.mapHeight()-1);
+            orientation = orientation.opposite();
+        } // ogolnie to mi sie nie podoba ale niech poki co bedzie, jak na cos sie wpadnie innego to sie poprawi
+
+        if (map.canMoveTo(newPosition)) // ustawianie nowej pozycji jezeli git
+            position = newPosition; // to w sumie dla rMap sie wydaje bez sensu, bo wyzej ustawilismy tak ze zawsze musi byc git
+                                    // ale dla wody bedzie przydatne, najwyzej sie zmieni
+
         for (int i=0; i<genomTab[ind].getI();i++){  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
             orientation = orientation.next();
         } // trzeba sprawdzac czy wychodzi poza mape a jak tak to zmienic jego orientacje lub pozycje

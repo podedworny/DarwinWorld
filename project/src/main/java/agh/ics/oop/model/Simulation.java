@@ -8,8 +8,8 @@ import java.util.List;
 public class Simulation implements Runnable{
     private final List<Animal> animalList = new LinkedList<>(); //linked list bo do usuwania umierajacych przechodzimy po nich i usuwamy w O(1)
     private final RectangularMap map; //    private final WorldMap map;
+    private final Arguments args;
 
-    private Arguments args;
     public Simulation(Arguments args, RectangularMap map) {
         this.map = map;
         this.args = args;
@@ -18,7 +18,7 @@ public class Simulation implements Runnable{
         for (int i=0; i<args.animalInitNumber(); i++){
             Animal animal = new Animal(map.getWidth(),map.getHeight(), args.animalEnergy(), args.genomLenght());
             animalList.add(animal);
-            map.placeNewAnimal(animal);
+            map.placeAnimal(animal);
         }
         map.placeNewGrass(args.grassAtStart());
 
@@ -38,7 +38,7 @@ public class Simulation implements Runnable{
 //        od pierwszego etapu to najpierw sie ruszaja itd
             deleteDeadAnimals();
             try {
-                Thread.sleep(500);
+                Thread.sleep(args.coolDown());
             }
             catch (Exception ignored){}
         }
@@ -57,7 +57,7 @@ public class Simulation implements Runnable{
 
     private void moveAnimals(){
         for (Animal animal : animalList)
-            animal.move();
+            map.move(animal);
     }
 
     private void eatGrass(){

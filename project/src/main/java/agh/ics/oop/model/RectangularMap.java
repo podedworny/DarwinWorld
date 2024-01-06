@@ -3,7 +3,7 @@ package agh.ics.oop.model;
 import java.util.*;
 
 public class RectangularMap {
-    private final Arguments args;
+    protected final Arguments args;
     private final int width;
     private final int height;
     protected final Map<Vector2d, TreeSet<Animal>> animals = new HashMap<>();
@@ -60,7 +60,15 @@ public class RectangularMap {
         }
     }
 
-    public void placeNewAnimal(Animal animal){
+    public void move(Animal animal){
+        if (animals.get(animal.getPosition()).contains(animal)){
+            removeAnimal(animal);
+            animal.move(args.energyCost(), this);
+            placeAnimal(animal);
+        }
+    }
+
+    public void placeAnimal(Animal animal){
         if (canMoveTo(animal.getPosition())){ //zakladam tutaj ze dostarczony zwierzak ma juz ustawiona dobra pozycje
             if (animals.get(animal.getPosition()) == null){
                 TreeSet<Animal> treeSet = new TreeSet<>();
@@ -88,12 +96,12 @@ public class RectangularMap {
         //zakładam ze juz sprawdzono czy mają energie na sex i są na tym samym polu
         MapDirection[] moves = childMoves(mother,father);
         Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves));
-        placeNewAnimal(child);
+        placeAnimal(child);
         mother.decreaseEnergy(args.energyTaken());
         father.decreaseEnergy(args.energyTaken());
         mother.newKid();
         father.newKid();
-        return child;  // wstępnie zwracamy dziecko, jesli nie bedzie potrzebne to zmienimy na voida
+        //return child;  // wstępnie zwracamy dziecko, jesli nie bedzie potrzebne to zmienimy na voida
     }
 
     public static MapDirection[] childMoves(Animal an1, Animal an2){ //metoda do stworzenia genu dziecka

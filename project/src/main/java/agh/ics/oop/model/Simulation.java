@@ -37,17 +37,19 @@ public class Simulation implements Runnable{
 //        5. Wzrastanie nowych roślin na wybranych polach mapy.
             map.placeNewGrass(args.grassEachDay());
             try {
-                Thread.sleep(args.coolDown());
+                Thread.sleep(2000);
             }
             catch (Exception ignored){}
+        System.out.println(map);
         }
+
     }
 
     private void deleteDeadAnimals(){
         Iterator<Animal> iterator = animalList.iterator(); // nie robie for eacha bo wywalilby blad przy usuwaniu
         while (iterator.hasNext()) {    // iteruje po liscie zwierzakow - usuwam z niej martwe i usuwam z planszy
             Animal animal = iterator.next();
-            if (animal.getEnergy() == 0) {
+            if (animal.getEnergy() <= 0) {
                 iterator.remove();
                 map.removeAnimal(animal);
             }

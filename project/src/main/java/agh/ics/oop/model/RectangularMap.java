@@ -1,18 +1,21 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.util.MapVisualizer;
+
 import java.util.*;
 
 public class RectangularMap {
+    private final List<MapChangeListener> observers = new ArrayList<>();
     protected final Arguments args;
     private final int width;
     private final int height;
     protected final Map<Vector2d, TreeSet<Animal>> animals = new HashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
 
-    public RectangularMap(int width, int height, Arguments args) {
+    public RectangularMap(Arguments args) {
         this.args = args;
-        this.width = width;
-        this.height = height;
+        this.width = args.mapWidth();
+        this.height = args.mapHeight();
     }
 
     public int getWidth() {
@@ -21,6 +24,10 @@ public class RectangularMap {
 
     public int getHeight() {
         return height;
+    }
+
+    public Arguments getArgs() {
+        return args;
     }
 
     public boolean canMoveTo(Vector2d position){
@@ -156,19 +163,51 @@ public class RectangularMap {
         }
 
         // mutacje trzeba zrobic
+        // mutacje dzieje sie automatycznie kiedy podajemy moves przy tworzeniu genomu
 
         return newMoves;
     }
 
     public void eatGrass(){
         Set<Vector2d> grassPositions = grasses.keySet();
-        for (Vector2d position : grassPositions){
+        Iterator<Vector2d> iterator = grassPositions.iterator();
+        while (iterator.hasNext()){
+            Vector2d position = iterator.next();
             if (animals.get(position) != null){
+                iterator.remove();
                 animals.get(position).first().eatGrass(args.grassEnergy());
                 removeGrass(position);
             }
         }
     }
 
+    public boolean isOccupied(Vector2d position){
+        return (animals.get(position) != null || grasses.get(position) != null);
+    }
+
+    public WorldElement objectAt(Vector2d position){
+        if (animals.get(position) != null)
+            return animals.get(position).first();
+        else
+            return grasses.get(position);
+    }
+    public void addObserver(MapChangeListener observer){
+        observers.add(observer);
+    }
+
+    public void removeObserver(MapChangeListener observer){
+        observers.remove(observer);
+    }
+
+    private void mapChanged(String message){
+        for (MapChangeListener observer:observers){
+            observer.mapChanged(this, message);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return new MapVisualizer(this).draw(new Vector2d(0,0),new Vector2d(width,height));
+    }
 }
 

@@ -1,9 +1,10 @@
 package agh.ics.oop.model;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Random;
 
-public class Animal implements Comparable<Animal>{
+public class Animal implements Comparable<Animal>, WorldElement{
     private Vector2d position; // pozycja
     private MapDirection orientation; // orientacja
     private final Genom genom; //nasz genom
@@ -66,13 +67,11 @@ public class Animal implements Comparable<Animal>{
         return position;
     }
 
-    public Comparator<Animal> comparator(){
-        return Comparator
-                .comparingInt((Animal a) -> a.energy)
-                .thenComparingInt(a -> a.age)
-                .thenComparingInt(a -> a.childrenCount)
-                .thenComparing(a -> new Random().nextInt());
+    @Override
+    public boolean isAt(Vector2d position) {
+        return this.position.equals(position);
     }
+
 
     public void decreaseEnergy(int energyLevel){
         energy -= energyLevel;
@@ -86,8 +85,23 @@ public class Animal implements Comparable<Animal>{
     }
 
     @Override
-    public int compareTo(Animal animal) {
-        return comparator().compare(this, animal);
+    public int compareTo(Animal other) {
+        int energyComparison = Integer.compare(other.energy, this.energy);
+        if (energyComparison != 0) {
+            return energyComparison;
+        }
+
+        int ageComparison = Integer.compare(other.age, this.age);
+        if (ageComparison != 0) {
+            return ageComparison;
+        }
+
+        int childrenComparison = Integer.compare(other.childrenCount, this.childrenCount);
+        if (childrenComparison != 0) {
+            return childrenComparison;
+        }
+
+        return Integer.compare(new Random().nextInt(3) - 1, 0);
     }
 
     public Genom getGenom() {
@@ -96,5 +110,23 @@ public class Animal implements Comparable<Animal>{
 
     public int getEnergy() {
         return energy;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(energy);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Animal animal = (Animal) o;
+        return energy == animal.energy && age == animal.age && childrenCount == animal.childrenCount && Objects.equals(position, animal.position) && orientation == animal.orientation && Objects.equals(genom, animal.genom);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, orientation, genom, energy, age, childrenCount);
     }
 }

@@ -10,8 +10,8 @@
             fx:controller="agh.ics.oop.presenter.SimulationPresenter">
     <center>
         <VBox alignment="CENTER">
-            <Label fx:id="przyklad" text="dziala"/>
-            <Button text="Commited" />
+            <Label fx:id="simulationLabel" text="simulation"/>
+            <Button text="Start Simulation" onAction="#onSimulationStartClicked" fx:id="startSimulation"/>
         </VBox>
     </center>
 </BorderPane>

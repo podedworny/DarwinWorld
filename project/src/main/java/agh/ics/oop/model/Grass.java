@@ -1,6 +1,6 @@
 package agh.ics.oop.model;
 
-public class Grass {
+public class Grass implements WorldElement{
     private final Vector2d position;
     private int Energy;
     public Grass(Vector2d position, int energy) {
@@ -10,7 +10,18 @@ public class Grass {
     public Vector2d getPosition() {
         return position;
     }
+
+    @Override
+    public boolean isAt(Vector2d position) {
+        return this.position.equals(position);
+    }
+
     public int getEnergy() {
         return Energy;
+    }
+
+    @Override
+    public String toString() {
+        return "*";
     }
 }

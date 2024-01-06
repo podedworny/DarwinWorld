@@ -1,6 +1,7 @@
 package agh.ics.oop;
 
 import agh.ics.oop.model.Arguments;
+import agh.ics.oop.model.RectangularMap;
 import agh.ics.oop.presenter.SimulationPresenter;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -27,7 +28,9 @@ public class SimulationApp extends Application {
         SimulationPresenter.setArguments(args);
         SimulationPresenter presenter = loader.getController();
 
-        // akcje wywołania mapy observera itp
+        RectangularMap rMap = new RectangularMap(args);
+        rMap.addObserver(presenter);
+        presenter.setWorldMap(rMap);
 
         configureStage(primaryStage, viewRoot);
         primaryStage.show();

@@ -50,7 +50,7 @@ public class MenuPresenter implements Initializable {
         if ("Normal map".equals(mapa)){
             waterMapTextField.setText("0");
         }
-        int waterNumber = Integer.parseInt(waterMapLabel.getText());
+        int waterNumber = Integer.parseInt(waterMapTextField.getText());
         int mapW = Integer.parseInt(mapWidth.getText());
         int mapH = Integer.parseInt(mapHeight.getText());
         int grassE = Integer.parseInt(grassEnergy.getText());
@@ -64,7 +64,7 @@ public class MenuPresenter implements Initializable {
 
         int grassStart = Integer.parseInt(grassAtStart.getText());
         int energyT = Integer.parseInt(energyTaken.getText());
-        int minM = Integer.parseInt(minMut.getId());
+        int minM = Integer.parseInt(minMut.getText());
         int maxM = Integer.parseInt(maxMut.getText());
         int genomL = Integer.parseInt(genomLen.getText());
         String var = variant.getValue();

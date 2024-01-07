@@ -33,51 +33,36 @@ public class RectangularMap {
     public boolean canMoveTo(Vector2d position){
         return position.getY() >= 0 && position.getY() < height;
     }
+    public int ilosc(Vector2d position) {
+        int totalAnimals = 0;
 
-    private int setPositionY(){
-        // metoda która losuje Y // chyba dziala ale nie jestem pewny nieparzystych i małych wysokości
-        Random random = new Random();
-        int y;
-        int mapPart = random.nextInt(10);
-        if (mapPart < 8) {
-            y = height / 5 + random.nextInt(height * 3 / 5 + height % 2); // równik
+        // Iteruj przez wszystkie wartości w mapie
+        for (TreeSet<Animal> animalSet : animals.values()) {
+            // Dodaj liczbę zwierząt w zbiorze do łącznej liczby zwierząt
+            totalAnimals += animalSet.size();
+
         }
-        else if(mapPart == 8 ) {
-            y = random.nextInt(height / 5); // dolna część
-        }
-        else {
-            y = height * 4 / 5 + height % 2 + random.nextInt(height / 5); // górna część
-        }
-        return y;
+        System.out.println(animals.get(position));
+        System.out.println(animals.get(position));
+        return totalAnimals;
     }
 
-    public void placeNewGrass(int grassCount){
-        Random random = new Random();
-        for (int i=0; i<grassCount; i++) {
-            int x = random.nextInt(width);
-            int y = setPositionY();
-            Vector2d position = new Vector2d(x, y);
-            while (grasses.get(position)!=null){
-                x = random.nextInt(width);
-                y = setPositionY();
-                position = new Vector2d(x, y);
-            }
-            Grass grass = new Grass(position,args.grassEnergy());
-            grasses.put(position,grass);
-        }
-    }
+
 
     public void move(Animal animal){
         if (animals.get(animal.getPosition()).contains(animal)){
+            System.out.println("MOVE:");
             removeAnimal(animal);
-            animal.move(args.energyCost(), this);
-
+            animal.move(this);
             placeAnimal(animal);
+            animal.decreaseEnergy(args.energyCost());
+            animal.getGenom().nextIndexDefault();
         }
+
     }
 
     public void placeAnimal(Animal animal){
-        if (canMoveTo(animal.getPosition())){ //zakladam tutaj ze dostarczony zwierzak ma juz ustawiona dobra pozycje
+//        if (canMoveTo(animal.getPosition())){ //zakladam tutaj ze dostarczony zwierzak ma juz ustawiona dobra pozycje
             if (animals.get(animal.getPosition()) == null){
                 TreeSet<Animal> treeSet = new TreeSet<>();
                 treeSet.add(animal);
@@ -86,20 +71,51 @@ public class RectangularMap {
             else{
                 animals.get(animal.getPosition()).add(animal);
             }
+//        }
+    }
+
+
+
+//    public void removeAnimal(Animal animal){
+////        System.out.println("PRZED " + ilosc());
+//        Vector2d position = animal.getPosition();
+//        if (animals.get(position).size() == 1) {
+//
+//            animals.remove(position);
+////            System.out.println("PO1 " + ilosc());
+//
+//        }
+//        else{
+////            System.out.println("xd");
+////            System.out.println(animals.get(position).size());
+//            animals.get(position).remove(animal);
+////            System.out.println("PO2 " + ilosc());
+////            System.out.println(animals.get(position).size());
+////            System.out.println("");
+//        }
+////        System.out.println("");
+//    }
+    public void removeAnimal(Animal animal) {
+        Vector2d position = animal.getPosition();
+        System.out.println("Removing animal at position: " + position);
+
+        if (animals.containsKey(position)) {
+            TreeSet<Animal> animalSet = animals.get(position);
+            if (animalSet.remove(animal)) {
+                System.out.println("Animal removed successfully");
+                if (animalSet.isEmpty()) {
+                    animals.remove(position);
+                    System.out.println("Empty set removed");
+                }
+            } else {
+                System.out.println("Animal not found in the set");
+                ilosc(position);
+            }
+        } else {
+            System.out.println("No animals at the specified position");
         }
     }
 
-    public void removeGrass(Vector2d vector2d){
-        grasses.remove(vector2d);
-    }
-
-    public void removeAnimal(Animal animal){
-        Vector2d position = animal.getPosition();
-        if (animals.get(position).size() == 1)
-            animals.remove(position);
-        else
-            animals.get(position).remove(animal);
-    }
     public Animal animalCopulation(Animal mother, Animal father){
         //zakładam ze juz sprawdzono czy mają energie na sex i są na tym samym polu
         MapDirection[] moves = childMoves(mother,father);
@@ -131,10 +147,7 @@ public class RectangularMap {
         }
     }
 
-    public static MapDirection[] childMoves(Animal an1, Animal an2){ //metoda do stworzenia genu dziecka
-
-        // ręki sobie za to nie dam uciąć
-
+    public static MapDirection[] childMoves(Animal an1, Animal an2){ //metoda do stworzenia genu dziecka// ręki sobie za to nie dam uciąć
         Random random = new Random();
         MapDirection[] newMoves = new MapDirection[an1.getGenom().getMoves().length];
         MapDirection[] moves1 = an1.getGenom().getMoves();
@@ -184,6 +197,42 @@ public class RectangularMap {
         }
     }
 
+    public void removeGrass(Vector2d vector2d){
+        grasses.remove(vector2d);
+    }
+
+    private int setPositionY(){
+        // metoda która losuje Y // chyba dziala ale nie jestem pewny nieparzystych i małych wysokości
+        Random random = new Random();
+        int y;
+        int mapPart = random.nextInt(10);
+        if (mapPart < 8) {
+            y = height / 5 + random.nextInt(height * 3 / 5 + height % 2); // równik
+        }
+        else if(mapPart == 8 ) {
+            y = random.nextInt(height / 5); // dolna część
+        }
+        else {
+            y = height * 4 / 5 + height % 2 + random.nextInt(height / 5); // górna część
+        }
+        return y;
+    }
+
+    public void placeNewGrass(int grassCount){
+        Random random = new Random();
+        for (int i=0; i<grassCount; i++) {
+            int x = random.nextInt(width);
+            int y = setPositionY();
+            Vector2d position = new Vector2d(x, y);
+            while (grasses.get(position)!=null){
+                x = random.nextInt(width);
+                y = setPositionY();
+                position = new Vector2d(x, y);
+            }
+            Grass grass = new Grass(position,args.grassEnergy());
+            grasses.put(position,grass);
+        }
+    }
     public boolean isOccupied(Vector2d position){
         return (animals.get(position) != null || grasses.get(position) != null);
     }

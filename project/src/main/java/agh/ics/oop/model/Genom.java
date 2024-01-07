@@ -43,7 +43,6 @@ public class Genom {
         }
     }
 
-
     public void nextIndexVariant(){  //wariant 3
         Random random = new Random();
         if(random.nextInt(10)<8){

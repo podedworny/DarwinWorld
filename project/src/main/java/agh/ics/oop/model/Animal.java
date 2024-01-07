@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Animal implements Comparable<Animal>, WorldElement{
+    private final int myId;
+    static int id;
     private Vector2d position; // pozycja
     private MapDirection orientation; // orientacja
     private final Genom genom; //nasz genom
@@ -21,6 +23,7 @@ public class Animal implements Comparable<Animal>, WorldElement{
         this.genom = genom;
         age = 0;
         childrenCount = 0;
+        myId = id++;
     }
 
     public Animal(int width, int height, int energy, int genomLen){ // konstruktor tylko do stworzenia animali na poczatku
@@ -32,11 +35,10 @@ public class Animal implements Comparable<Animal>, WorldElement{
         this.genom = new Genom(genomLen);
         age = 0;
         childrenCount = 0;
+        myId = id++;
     }
 
-    public void move(int energyCost, RectangularMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
-
-        energy -= energyCost; // zmniejszanie energii
+    public void move( RectangularMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
         MapDirection[] mapValues = MapDirection.values();
         MapDirection[] genomTab = genom.getMoves();
         int ind = genom.getIndex();
@@ -45,25 +47,27 @@ public class Animal implements Comparable<Animal>, WorldElement{
             orientation = orientation.next();
         }
 
-        Vector2d newPosition = position.add(orientation.toUnitVector()); //(zmiana jego pozycji)
+        Vector2d newPosition = position.add(orientation.toUnitVector());//(zmiana jego pozycji)
 
-        genom.nextIndexDefault(); // na ten moment takie bedzie bo moze byc jeszcze wariant
-        if (newPosition.getX() == -1)
-            newPosition = new Vector2d(map.args.mapWidth()-1, newPosition.getY());
-        else if (newPosition.getX() == map.args.mapWidth())
-            newPosition = new Vector2d(0, newPosition.getY());
-        else if (newPosition.getY() == -1) {
-            newPosition = new Vector2d(newPosition.getX(), 0);
+        if(newPosition.getX()==-1){
+            newPosition = new Vector2d(map.getWidth()-1,newPosition.getY());
+        }
+        else if(newPosition.getX()==map.getWidth()){
+            newPosition = new Vector2d(0,newPosition.getY());
+        }
+
+        if(newPosition.getY()==-1){
+            newPosition = new Vector2d(newPosition.getX(),0);
             orientation = orientation.opposite();
         }
-        else if (newPosition.getY() == map.args.mapHeight()){
-            newPosition = new Vector2d(newPosition.getX(), map.args.mapHeight()-1);
+        else if(newPosition.getY()== map.getHeight()){
+            newPosition = new Vector2d(newPosition.getX(), map.getHeight()-1);
             orientation = orientation.opposite();
-        } // ogolnie to mi sie nie podoba ale niech poki co bedzie, jak na cos sie wpadnie innego to sie poprawi
-
-        if (map.canMoveTo(newPosition)) // ustawianie nowej pozycji jezeli git
-            position = newPosition; // to w sumie dla rMap sie wydaje bez sensu, bo wyzej ustawilismy tak ze zawsze musi byc git
-                                    // ale dla wody bedzie przydatne, najwyzej sie zmieni
+        }
+        position = newPosition;
+//        if (map.canMoveTo(newPosition)) // ustawianie nowej pozycji jezeli git
+//            position = newPosition; // to w sumie dla rMap sie wydaje bez sensu, bo wyzej ustawilismy tak ze zawsze musi byc git
+//                                    // ale dla wody bedzie przydatne, najwyzej sie zmieni
     }
 
     public Vector2d getPosition(){
@@ -80,6 +84,10 @@ public class Animal implements Comparable<Animal>, WorldElement{
     }
     public void newKid(){
         childrenCount++;
+    }
+
+    public void nextDay(){
+        age++;
     }
 
     public void eatGrass(int grassEnergy){
@@ -116,7 +124,7 @@ public class Animal implements Comparable<Animal>, WorldElement{
 
     @Override
     public String toString() {
-        return String.valueOf(energy);
+        return String.valueOf(energy)+orientation.toString()+myId;
     }
 
     @Override
@@ -124,11 +132,11 @@ public class Animal implements Comparable<Animal>, WorldElement{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Animal animal = (Animal) o;
-        return energy == animal.energy && age == animal.age && childrenCount == animal.childrenCount && Objects.equals(position, animal.position) && orientation == animal.orientation && Objects.equals(genom, animal.genom);
+        return myId == animal.myId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, orientation, genom, energy, age, childrenCount);
+        return Objects.hash(myId);
     }
 }

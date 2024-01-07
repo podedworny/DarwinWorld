@@ -18,7 +18,7 @@ public class World {
             10,
             20,
             1,
-            10,
+            5,
             1,
             0,
             5,

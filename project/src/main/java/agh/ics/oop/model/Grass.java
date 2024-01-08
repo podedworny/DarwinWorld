@@ -16,12 +16,17 @@ public class Grass implements WorldElement{
         return this.position.equals(position);
     }
 
+    @Override
+    public MapDirection getOrientation() {
+        return MapDirection.N;
+    }
+
     public int getEnergy() {
         return Energy;
     }
 
     @Override
     public String toString() {
-        return "*";
+        return "/images/grass128.png";
     }
 }

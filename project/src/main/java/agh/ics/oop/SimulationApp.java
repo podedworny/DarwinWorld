@@ -20,28 +20,18 @@ public class SimulationApp extends Application {
         primaryStage.show();
     }
 
-    public static void simulationWindow(Arguments args) throws Exception {
-        Stage primaryStage = new Stage();
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(SimulationApp.class.getClassLoader().getResource("simulation.fxml"));
-        BorderPane viewRoot = loader.load();
-        SimulationPresenter.setArguments(args);
-        SimulationPresenter presenter = loader.getController();
-
-        RectangularMap rMap = new RectangularMap(args);
-        rMap.addObserver(presenter);
-        presenter.setWorldMap(rMap);
-
-        configureStage(primaryStage, viewRoot);
-        primaryStage.show();
-    }
-
     private static void configureStage(Stage primaryStage, BorderPane viewRoot) {
         var scene = new Scene(viewRoot);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Menu");
         primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
         primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        System.exit(0);
     }
 }
 

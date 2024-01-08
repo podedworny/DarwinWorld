@@ -74,9 +74,15 @@ public class Animal implements Comparable<Animal>, WorldElement{
         return position;
     }
 
+
     @Override
     public boolean isAt(Vector2d position) {
         return this.position.equals(position);
+    }
+
+    @Override
+    public MapDirection getOrientation() {
+        return orientation;
     }
 
     public void decreaseEnergy(int energyLevel){
@@ -122,9 +128,17 @@ public class Animal implements Comparable<Animal>, WorldElement{
         return energy;
     }
 
+    public int getAge() {
+        return age;
+    }
+
+    public int getChildrenCount() {
+        return childrenCount;
+    }
+
     @Override
     public String toString() {
-        return String.valueOf(energy)+orientation.toString()+myId;
+        return "/images/paw128.png";
     }
 
     @Override

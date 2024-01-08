@@ -2,18 +2,21 @@ package agh.ics.oop.presenter;
 
 import agh.ics.oop.SimulationApp;
 import agh.ics.oop.model.Arguments;
+import agh.ics.oop.model.RectangularMap;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
-import java.awt.*;
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
@@ -45,7 +48,7 @@ public class MenuPresenter implements Initializable {
     // wszystkie parametry z menu + id przycisku i wybrany typ mapy (jeszcze nie dodane)
 
     // pomysł --> stworzyć klase arguments, tam zapisac je i w ten sposob przekazywac
-    public void makeNewWindow() throws Exception {
+    public void startSimulation() throws Exception {
         String mapa = mapType.getValue();
         if ("Normal map".equals(mapa)){
             waterMapTextField.setText("0");
@@ -73,8 +76,30 @@ public class MenuPresenter implements Initializable {
                 animalE, energyC, animalInitN, grassEachD, coolD,grassStart,
                 energyT, minM, maxM, genomL, var, waterNumber);
 
-        SimulationApp.simulationWindow(args);
+
+        Stage primaryStage = new Stage();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(SimulationApp.class.getClassLoader().getResource("simulation.fxml"));
+        BorderPane viewRoot = loader.load();
+        SimulationPresenter.setArguments(args);
+        SimulationPresenter presenter = loader.getController();
+
+        RectangularMap rMap = new RectangularMap(args);
+        rMap.addObserver(presenter);
+        presenter.setWorldMap(rMap);
+
+        configureStage(primaryStage, viewRoot);
+        primaryStage.show();
     }
+
+    private static void configureStage(Stage primaryStage, BorderPane viewRoot) {
+        var scene = new Scene(viewRoot);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Simulation");
+        primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
+        primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
+    }
+
     // to co ponizej to 90% chatgpt, ale dziala
     public void initialize(URL location, ResourceBundle resources) {
         mapType.setItems(FXCollections.observableArrayList("Normal map", "Water map"));
@@ -89,7 +114,7 @@ public class MenuPresenter implements Initializable {
             }
         });
         waterMapTextField.setTextFormatter(createIntegerTextFormatter(10,1000)); // powinny byc inne ograniczenia
-        mapWidth.setTextFormatter(createIntegerTextFormatter(100, 1000));
+        mapWidth.setTextFormatter(createIntegerTextFormatter(30, 1000));
         mapHeight.setTextFormatter(createIntegerTextFormatter(30, 1000));
         grassEnergy.setTextFormatter(createIntegerTextFormatter(10, 1000));
         copulationEnergy.setTextFormatter(createIntegerTextFormatter(30, 1000));

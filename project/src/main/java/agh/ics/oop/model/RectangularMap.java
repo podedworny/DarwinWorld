@@ -9,7 +9,7 @@ public class RectangularMap {
     protected final Arguments args;
     private final int width;
     private final int height;
-    protected final Map<Vector2d, TreeSet<Animal>> animals = new HashMap<>();
+    protected final Map<Vector2d, List<Animal>> animals = new HashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
 
     public RectangularMap(Arguments args) {
@@ -37,9 +37,9 @@ public class RectangularMap {
         int totalAnimals = 0;
 
         // Iteruj przez wszystkie wartości w mapie
-        for (TreeSet<Animal> animalSet : animals.values()) {
+        for (List<Animal> animalList : animals.values()) {
             // Dodaj liczbę zwierząt w zbiorze do łącznej liczby zwierząt
-            totalAnimals += animalSet.size();
+            totalAnimals += animalList.size();
 
         }
         System.out.println(animals.get(position));
@@ -61,16 +61,20 @@ public class RectangularMap {
 
     }
 
+
     public void placeAnimal(Animal animal){
 //        if (canMoveTo(animal.getPosition())){ //zakladam tutaj ze dostarczony zwierzak ma juz ustawiona dobra pozycje
-            if (animals.get(animal.getPosition()) == null){
-                TreeSet<Animal> treeSet = new TreeSet<>();
-                treeSet.add(animal);
-                animals.put(animal.getPosition(), treeSet);
-            }
-            else{
-                animals.get(animal.getPosition()).add(animal);
-            }
+        Vector2d position = animal.getPosition();
+        List<Animal> animalList = animals.computeIfAbsent(position, k -> new ArrayList<>());
+
+        animalList.add(animal);
+
+        // Sortuje listę dla określonej pozycji
+        animalList.sort(Comparator.comparing(Animal::getEnergy)
+                .reversed()
+                .thenComparing(Animal::getAge)
+                .thenComparing(Animal::getChildrenCount)
+                .thenComparing(animal1 -> new Random().nextInt(3) - 1));
 //        }
     }
 
@@ -97,22 +101,22 @@ public class RectangularMap {
 //    }
     public void removeAnimal(Animal animal) {
         Vector2d position = animal.getPosition();
-        System.out.println("Removing animal at position: " + position);
+        //System.out.println("Removing animal at position: " + position);
 
         if (animals.containsKey(position)) {
-            TreeSet<Animal> animalSet = animals.get(position);
-            if (animalSet.remove(animal)) {
-                System.out.println("Animal removed successfully");
-                if (animalSet.isEmpty()) {
+            List<Animal> animalList = animals.get(position);
+            if (animalList.remove(animal)) {
+                //System.out.println("Animal removed successfully");
+                if (animalList.isEmpty()) {
                     animals.remove(position);
-                    System.out.println("Empty set removed");
+                    //System.out.println("Empty set removed");
                 }
             } else {
-                System.out.println("Animal not found in the set");
+                //System.out.println("Animal not found in the set");
                 ilosc(position);
             }
         } else {
-            System.out.println("No animals at the specified position");
+            //System.out.println("No animals at the specified position");
         }
     }
 
@@ -127,6 +131,7 @@ public class RectangularMap {
         father.newKid();
         return child;  // wstępnie zwracamy dziecko, jesli nie bedzie potrzebne to zmienimy na voida
     }
+
 
     public void reproduce(){
         // biore wszystkie pozycje na ktorych sa zwierzaki
@@ -191,7 +196,7 @@ public class RectangularMap {
             Vector2d position = iterator.next();
             if (animals.get(position) != null){
                 iterator.remove();
-                animals.get(position).first().eatGrass(args.grassEnergy());
+                animals.get(position).get(0).eatGrass(args.grassEnergy());
                 removeGrass(position);
             }
         }
@@ -232,6 +237,7 @@ public class RectangularMap {
             Grass grass = new Grass(position,args.grassEnergy());
             grasses.put(position,grass);
         }
+        mapChanged("123");
     }
     public boolean isOccupied(Vector2d position){
         return (animals.get(position) != null || grasses.get(position) != null);
@@ -239,7 +245,7 @@ public class RectangularMap {
 
     public WorldElement objectAt(Vector2d position){
         if (animals.get(position) != null)
-            return animals.get(position).first();
+            return animals.get(position).get(0);
         else
             return grasses.get(position);
     }
@@ -256,6 +262,7 @@ public class RectangularMap {
             observer.mapChanged(this, message);
         }
     }
+
 
     @Override
     public String toString() {

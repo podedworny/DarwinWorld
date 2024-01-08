@@ -11,7 +11,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            minHeight="550.0" minWidth="450.0"
+            minHeight="700.0" minWidth="450.0"
             fx:controller="agh.ics.oop.presenter.MenuPresenter">
     <center>
         <VBox alignment="CENTER" spacing="10">
@@ -123,7 +123,7 @@
                 <TextField fx:id="coolDown" />
             </HBox>
 
-            <Button fx:id="commitButton" text="Commit" onAction="#makeNewWindow"/>
+            <Button fx:id="commitButton" text="Commit" onAction="#startSimulation"/>
         </VBox>
     </center>
 

@@ -50,9 +50,6 @@ public class MenuPresenter implements Initializable {
     @FXML
     private TextField waterMapTextField;
 
-    // wszystkie parametry z menu + id przycisku i wybrany typ mapy (jeszcze nie dodane)
-
-    // pomysł --> stworzyć klase arguments, tam zapisac je i w ten sposob przekazywac
     public void startSimulation() throws Exception {
         String mapa = mapType.getValue();
         if ("Normal map".equals(mapa)){
@@ -86,20 +83,20 @@ public class MenuPresenter implements Initializable {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(SimulationApp.class.getClassLoader().getResource("simulation.fxml"));
         BorderPane viewRoot = loader.load();
+
         SimulationPresenter.setArguments(args);
         SimulationPresenter presenter = loader.getController();
+
+        presenter.setPrimaryStage(primaryStage);
 
         RectangularMap rMap = new RectangularMap(args);
         rMap.addObserver(presenter);
         presenter.setWorldMap(rMap);
 
         configureStage(primaryStage, viewRoot);
-        // Startowanie symulacji
+
         Simulation simulation = new Simulation(args, rMap);
         presenter.setSimulation(simulation);
-        SimulationEngine simulationEngine = new SimulationEngine(List.of(simulation));
-        simulationEngine.runAsync();
-
 
         primaryStage.show();
     }

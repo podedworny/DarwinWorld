@@ -2,20 +2,20 @@ package agh.ics.oop.presenter;
 
 import agh.ics.oop.SimulationEngine;
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.SimulationState;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 
 public class SimulationPresenter implements MapChangeListener {
@@ -33,6 +33,18 @@ public class SimulationPresenter implements MapChangeListener {
     public Button startSimulation;
     private Arguments args;
     private Simulation simulation;
+    private Stage primaryStage;
+    private boolean firstClick=true;
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+
+        this.primaryStage.setOnCloseRequest(event -> {
+            System.out.println("Okno zostało zamknięte");
+//            Platform.exit();
+            simulation.setState(SimulationState.FINISHED);
+        });
+    }
 
     public static void setArguments(Arguments args){
         // sie okaze czy cos tu bedzie
@@ -45,7 +57,6 @@ public class SimulationPresenter implements MapChangeListener {
 
 
     public void drawMap(RectangularMap worldMap) {
-//        simulationLabel.setText(worldMap.toString());
         mapGrid.setAlignment(Pos.CENTER);
         int CELL_WIDTH = 15;
         int CELL_HEIGHT = 15;
@@ -101,12 +112,22 @@ public class SimulationPresenter implements MapChangeListener {
         });
     }
 
-    @FXML
     public void onSimulationStartClicked() {
+        if (firstClick) {
+            Thread thread = new Thread((simulation));
+            thread.start();
+            firstClick = false;
+        } else {
+            simulation.setState(SimulationState.STARTED);
+        }
+    }
+
+    public void stopSimulation(){
+        simulation.stopSimulation();
     }
 
     private void clearGrid() {
-        mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0)); // hack to retain visible grid lines
+        mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0));
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
     }
@@ -114,6 +135,5 @@ public class SimulationPresenter implements MapChangeListener {
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
     }
-    // tu beda metody z odpalaniem symulacji i printowaniem mapy i wykresu(?)
 
 }

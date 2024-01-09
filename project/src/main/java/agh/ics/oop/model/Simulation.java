@@ -1,15 +1,19 @@
 package agh.ics.oop.model;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Simulation implements Runnable{
     private static final List<Animal> animalList = new LinkedList<>(); //linked list bo do usuwania umierajacych przechodzimy po nich i usuwamy w O(1)
-    private final List<Animal> deadAnimalList = new LinkedList<>(); // martwe zwierzaki aby policzyc srednia wieku
+//    private final List<Animal> deadAnimalList = new LinkedList<>(); // martwe zwierzaki aby policzyc srednia wieku
     private final List<Animal> allAnimalList = new LinkedList<>(); // wszystkie zyjace zwierzaki kiedykolwiek
     private final RectangularMap map; //    private final WorldMap map;
     private final Arguments args;
     private static int day= 0;
     private final Map<MapDirection[], Integer> genomDictionary = new HashMap<>();
+    private SimulationState state = SimulationState.STARTED;
+    private int deadAnimals = 0;
+    private int sumDaysOfDeadAnimals=0;
 
     public Simulation(Arguments args, RectangularMap map) {
         this.map = map;
@@ -27,44 +31,64 @@ public class Simulation implements Runnable{
 
         //...
     }
-    public void run(){
-        while (true) {
-//        1. Usunięcie martwych zwierzaków z mapy.
-            deleteDeadAnimals();
-//            System.out.println(map);
-//            System.out.println(animalList.toArray().length);
-//
-//            System.out.println(animalList.get(0).getPosition().toString());
-//            System.out.println(Arrays.toString(animalList.get(0).getGenom().getMoves()));
-//            System.out.println(animalList.get(0).getGenom().getIndex());
-//            System.out.println(animalList.get(1).getPosition().toString());
-//            System.out.println(Arrays.toString(animalList.get(1).getGenom().getMoves()));
-//            System.out.println(animalList.get(1).getGenom().getIndex());
-//        2. Skręt i przemieszczenie każdego zwierzaka.
-            moveAnimals();
-//        3. Konsumpcja roślin, na których pola weszły zwierzaki.
-            map.eatGrass();
-//        4. Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu.
-            reproduce();
-//        5. Wzrastanie nowych roślin na wybranych polach mapy.
-            map.placeNewGrass(args.grassEachDay());
-            // 6. liczenie potomkow
-            descendantCounting();
-            try {
-                Thread.sleep(args.coolDown());
-            }
-            catch (Exception ignored){}
 
-            for (Animal animal: animalList)
-                animal.nextDay();
-            day ++;
-            if(animalList.isEmpty()){
-                System.err.println("KONIEC");
-                break;
-            }
+    public void setState(SimulationState state) {
+        if(this.state!=SimulationState.FINISHED){
+            this.state = state;
         }
     }
 
+    public void stopSimulation() {
+        state = SimulationState.STOPED;
+    }
+
+    public void run(){
+        while (true) {
+            switch (state) {
+                case STARTED -> {
+                    deleteDeadAnimals();
+                    moveAnimals();
+                    map.eatGrass();
+                    reproduce();
+                    map.placeNewGrass(args.grassEachDay());
+                    descendantCounting();
+
+                    try {
+                        Thread.sleep(args.coolDown());
+                    }
+                    catch (Exception ignored){}
+
+                    for (Animal animal: animalList)
+                        animal.nextDay();
+                    day ++;
+                    if(animalList.isEmpty()){
+                        state = SimulationState.FINISHED;
+                        System.err.println("KONIEC");
+                    }
+                }
+                case STOPED -> sleep(100);
+                case FINISHED -> {
+                    return;
+                }
+            }
+
+        }
+    }
+    public static void sleep(int milliseconds) {
+        try {
+            Thread sleepingThread = new Thread(() -> {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(milliseconds);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            sleepingThread.start();
+            sleepingThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     private void descendantCounting() {
         for (Animal animal : allAnimalList)
             animal.descendantCalculate();
@@ -85,19 +109,16 @@ public class Simulation implements Runnable{
             Animal animal = iterator.next();
             if (animal.getEnergy() <= 0) {
                 animal.setDeathDate(day);
-                deadAnimalList.add(animal);
+//                deadAnimalList.add(animal);
+                deadAnimals++;
+                sumDaysOfDeadAnimals += animal.getAge();
                 System.out.println(animal.getGenom());
                 System.out.println(genomDictionary.get(animal.getGenom().getMoves()));
                 genomDictionary.compute(animal.getGenom().getMoves(), (key, value) -> (value <= 1) ? null : value - 1);
                 iterator.remove();
-//                System.out.println("");
-//                System.out.println(map.ilosc());
-                //System.out.println("DEAD:");
                 map.removeAnimal(animal);
-//                System.out.println(map.ilosc());
             }
         }
-//        System.out.println("POROWNANIE " + animalList.toArray().length + " " + map.ilosc());
     }
 
     private void moveAnimals(){
@@ -141,10 +162,13 @@ public class Simulation implements Runnable{
     }
 
     public double averageAge(){
-        double result = 0.0;
-        for (Animal animal : deadAnimalList)
-            result += animal.getAge();
-        return result / deadAnimalList.size();
+//        double result = 0.0;
+//        for (Animal animal : deadAnimalList)
+//            result += animal.getAge();
+//        return result / deadAnimalList.size();
+        if (deadAnimals ==0)
+            return 0;
+        return (double) sumDaysOfDeadAnimals / deadAnimals;
     }
 
     public MapDirection[] getMostPopularGenom(){
@@ -159,5 +183,7 @@ public class Simulation implements Runnable{
         }
         return result;
     }
+
+
 }
 

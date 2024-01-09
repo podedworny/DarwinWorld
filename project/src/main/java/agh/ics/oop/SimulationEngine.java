@@ -29,4 +29,11 @@ public class SimulationEngine {
             thread.start();
         }
     }
+
+    public void stopSimulations() {
+        for (Thread thread : threads) {
+            thread.interrupt();
+        }
+    }
+
 }

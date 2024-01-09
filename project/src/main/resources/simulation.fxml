@@ -21,11 +21,15 @@
         </VBox>
     </top>
     <center>
-        <SplitPane fx:id="mainSplitPane" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER">
+            <Label fx:id="data1" textAlignment="CENTER" text="data"/>
+        <SplitPane fx:id="mainSplitPane" BorderPane.alignment="CENTER">
             <items>
                 <GridPane fx:id="mapGrid" gridLinesVisible="true"/>
             </items>
         </SplitPane>
+            <Label fx:id="data2" textAlignment="CENTER" text="data"/>
+        </HBox>
     </center>
     <bottom>
         <VBox alignment="CENTER">

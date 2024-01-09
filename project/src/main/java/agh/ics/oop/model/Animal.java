@@ -1,10 +1,8 @@
 package agh.ics.oop.model;
 
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
-public class Animal implements Comparable<Animal>, WorldElement{
+public class Animal implements WorldElement{
     private final int myId;
     static int id;
     private Vector2d position; // pozycja
@@ -12,7 +10,12 @@ public class Animal implements Comparable<Animal>, WorldElement{
     private final Genom genom; //nasz genom
     private int energy; //poziom energii
     private int age; //wiek
-    private int childrenCount; // liczba dzieci
+    private int childrenCount = 0; // liczba dzieci
+    private int deathDate; // dzien smierci
+    private int descendantCount; // liczba potomkow
+    private int grassEaten; // liczba zjedzonej trawy
+    protected final List<Animal> kids = new LinkedList<>(); // lista dzieci
+
 
     public Animal(Vector2d pos, int energy, Genom genom){
         MapDirection[] directions = MapDirection.values();
@@ -38,7 +41,7 @@ public class Animal implements Comparable<Animal>, WorldElement{
         myId = id++;
     }
 
-    public void move( RectangularMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
+    public void move(RectangularMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
         MapDirection[] mapValues = MapDirection.values();
         MapDirection[] genomTab = genom.getMoves();
         int ind = genom.getIndex();
@@ -96,28 +99,20 @@ public class Animal implements Comparable<Animal>, WorldElement{
         age++;
     }
 
-    public void eatGrass(int grassEnergy){
-        energy += grassEnergy;
+    public void setDeathDate(int deathDate){
+        this.deathDate = deathDate;
     }
 
-    @Override
-    public int compareTo(Animal other) {
-        int energyComparison = Integer.compare(other.energy, this.energy);
-        if (energyComparison != 0) {
-            return energyComparison;
-        }
+    public void eatGrass(int grassEnergy){
+        energy += grassEnergy;
+        grassEaten++;
+    }
 
-        int ageComparison = Integer.compare(other.age, this.age);
-        if (ageComparison != 0) {
-            return ageComparison;
-        }
-
-        int childrenComparison = Integer.compare(other.childrenCount, this.childrenCount);
-        if (childrenComparison != 0) {
-            return childrenComparison;
-        }
-
-        return Integer.compare(new Random().nextInt(3) - 1, 0);
+    public static Comparator<Animal> animalComparator(){
+        return Comparator.comparing(Animal::getEnergy, Comparator.reverseOrder())
+                .thenComparing(Animal::getAge, Comparator.reverseOrder())
+                .thenComparing(Animal::getChildrenCount, Comparator.reverseOrder())
+                .thenComparing(animal -> new Random().nextBoolean());
     }
 
     public Genom getGenom() {
@@ -136,10 +131,36 @@ public class Animal implements Comparable<Animal>, WorldElement{
         return childrenCount;
     }
 
+    public int getDeathDate(){
+        return deathDate;
+    }
+
+    public int getDescendantCount(){
+        return descendantCount;
+    }
+
+    public int getGrassEaten(){
+        return grassEaten;
+    }
+
+    public void addKid(Animal animal){
+        kids.add(animal);
+    }
     @Override
     public String toString() {
         return "/images/paw128.png";
     }
+    public int descendantCalculate(){
+        if (kids.isEmpty())
+            return 0;
+        int result = childrenCount;
+        for (Animal kid : kids){
+            result += kid.descendantCalculate();
+        }
+        descendantCount = result;
+        return result;
+    }
+
 
     @Override
     public boolean equals(Object o) {

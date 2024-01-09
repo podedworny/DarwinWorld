@@ -1,9 +1,12 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.SimulationApp;
+import agh.ics.oop.SimulationEngine;
 import agh.ics.oop.model.Arguments;
 import agh.ics.oop.model.RectangularMap;
+import agh.ics.oop.model.Simulation;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -14,9 +17,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
@@ -89,6 +94,13 @@ public class MenuPresenter implements Initializable {
         presenter.setWorldMap(rMap);
 
         configureStage(primaryStage, viewRoot);
+        // Startowanie symulacji
+        Simulation simulation = new Simulation(args, rMap);
+        presenter.setSimulation(simulation);
+        SimulationEngine simulationEngine = new SimulationEngine(List.of(simulation));
+        simulationEngine.runAsync();
+
+
         primaryStage.show();
     }
 

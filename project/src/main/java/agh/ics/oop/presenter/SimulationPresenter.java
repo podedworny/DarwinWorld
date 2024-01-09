@@ -12,6 +12,8 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,12 +24,15 @@ public class SimulationPresenter implements MapChangeListener {
     public Label dayLabel;
     public Label numberOfAnimals;
     public SplitPane mainSplitPane;
+    public Label data1;
+    public Label data2;
     private RectangularMap rMap;
     @FXML
     private Label simulationLabel;
     @FXML
     public Button startSimulation;
     private Arguments args;
+    private Simulation simulation;
 
     public static void setArguments(Arguments args){
         // sie okaze czy cos tu bedzie
@@ -85,6 +90,7 @@ public class SimulationPresenter implements MapChangeListener {
 
         dayLabel.setText("Day " + Simulation.getDay());
         numberOfAnimals.setText("Number of animals " + Simulation.numberOfAnimals());
+        data2.setText("Most populat genom: " + Arrays.toString(simulation.getMostPopularGenom()) +"\nGrassFields: "+ rMap.getGrassFields() + "\nAverage Energy Level: "+ simulation.averageEnergyLevel()+"\nAverage child count: "+simulation.averageChildrenCount()+"\nAverage Dead Animal Age: " + simulation.averageAge());
     }
 
     @Override
@@ -97,15 +103,16 @@ public class SimulationPresenter implements MapChangeListener {
 
     @FXML
     public void onSimulationStartClicked() {
-        Simulation simulation = new Simulation(rMap.getArgs(), rMap);
-        SimulationEngine simulationEngine = new SimulationEngine(List.of(simulation));
-        simulationEngine.runAsync();
     }
 
     private void clearGrid() {
         mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0)); // hack to retain visible grid lines
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
+    }
+
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
     }
     // tu beda metody z odpalaniem symulacji i printowaniem mapy i wykresu(?)
 

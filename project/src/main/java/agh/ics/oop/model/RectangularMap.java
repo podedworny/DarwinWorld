@@ -3,19 +3,22 @@ package agh.ics.oop.model;
 import agh.ics.oop.model.util.MapVisualizer;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RectangularMap {
     private final List<MapChangeListener> observers = new ArrayList<>();
     protected final Arguments args;
     private final int width;
     private final int height;
+    private final int fields;
+    private int grassFields = 0;
     protected final Map<Vector2d, List<Animal>> animals = new HashMap<>();
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
-
     public RectangularMap(Arguments args) {
         this.args = args;
         this.width = args.mapWidth();
         this.height = args.mapHeight();
+        this.fields = this.width*this.height;
     }
 
     public int getWidth() {
@@ -28,6 +31,10 @@ public class RectangularMap {
 
     public Arguments getArgs() {
         return args;
+    }
+
+    public int getGrassFields() {
+        return grassFields;
     }
 
     public boolean canMoveTo(Vector2d position){
@@ -47,38 +54,26 @@ public class RectangularMap {
         return totalAnimals;
     }
 
-
-
     public void move(Animal animal){
         if (animals.get(animal.getPosition()).contains(animal)){
-            System.out.println("MOVE:");
+            //System.out.println("MOVE:");
             removeAnimal(animal);
             animal.move(this);
             placeAnimal(animal);
             animal.decreaseEnergy(args.energyCost());
             animal.getGenom().nextIndexDefault();
         }
+        else{
+            throw new RuntimeException();
+        }
 
     }
-
 
     public void placeAnimal(Animal animal){
-//        if (canMoveTo(animal.getPosition())){ //zakladam tutaj ze dostarczony zwierzak ma juz ustawiona dobra pozycje
         Vector2d position = animal.getPosition();
-        List<Animal> animalList = animals.computeIfAbsent(position, k -> new ArrayList<>());
-
-        animalList.add(animal);
-
-        // Sortuje listę dla określonej pozycji
-        animalList.sort(Comparator.comparing(Animal::getEnergy)
-                .reversed()
-                .thenComparing(Animal::getAge)
-                .thenComparing(Animal::getChildrenCount)
-                .thenComparing(animal1 -> new Random().nextInt(3) - 1));
-//        }
+        animals.computeIfAbsent(position, k -> new ArrayList<>()).add(animal);
+        animals.get(position).sort(Animal.animalComparator());
     }
-
-
 
 //    public void removeAnimal(Animal animal){
 ////        System.out.println("PRZED " + ilosc());
@@ -124,32 +119,13 @@ public class RectangularMap {
         //zakładam ze juz sprawdzono czy mają energie na sex i są na tym samym polu
         MapDirection[] moves = childMoves(mother,father);
         Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves));
-        placeAnimal(child);
         mother.decreaseEnergy(args.energyTaken());
         father.decreaseEnergy(args.energyTaken());
         mother.newKid();
+        mother.addKid(child);
         father.newKid();
+        father.addKid(child);
         return child;  // wstępnie zwracamy dziecko, jesli nie bedzie potrzebne to zmienimy na voida
-    }
-
-
-    public void reproduce(){
-        // biore wszystkie pozycje na ktorych sa zwierzaki
-        // i dla kazdego pola biore dwojke (jezeli istnieje i ma energie) na sex
-        // zwracam zwierzaka i klade go na plansze
-        Set<Vector2d> animalsPositions = animals.keySet();
-        for (Vector2d position : animalsPositions){
-            if (animals.get(position).size()>1) {
-                List<Animal> animalPos = new ArrayList<>(animals.get(position));
-                for (int i = 0; i < animalPos.size(); i += 2) { // to tez do przepisania ale niech bedzie poki co
-                    if (i + 1 < animalPos.size()  && animalPos.get(i).getEnergy()>args.energyTaken() && animalPos.get(i+1).getEnergy()>args.energyTaken()) {
-                        Animal kid = animalCopulation(animalPos.get(i), animalPos.get(i + 1));
-                        placeAnimal(kid);
-                        Simulation.addNewAnimal(kid);
-                    }
-                }
-            }
-        }
     }
 
     public static MapDirection[] childMoves(Animal an1, Animal an2){ //metoda do stworzenia genu dziecka// ręki sobie za to nie dam uciąć
@@ -204,6 +180,7 @@ public class RectangularMap {
 
     public void removeGrass(Vector2d vector2d){
         grasses.remove(vector2d);
+        grassFields--;
     }
 
     private int setPositionY(){
@@ -229,10 +206,11 @@ public class RectangularMap {
             int x = random.nextInt(width);
             int y = setPositionY();
             Vector2d position = new Vector2d(x, y);
-            while (grasses.get(position)!=null){
+            while (grassFields<=fields && grasses.get(position)!=null){
                 x = random.nextInt(width);
                 y = setPositionY();
                 position = new Vector2d(x, y);
+                grassFields++;
             }
             Grass grass = new Grass(position,args.grassEnergy());
             grasses.put(position,grass);

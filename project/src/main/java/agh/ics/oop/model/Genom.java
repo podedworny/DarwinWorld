@@ -1,9 +1,6 @@
 package agh.ics.oop.model;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -76,5 +73,20 @@ public class Genom {
     @Override
     public String toString() {
         return Arrays.toString(moves);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Genom genom = (Genom) o;
+        return Arrays.equals(moves, genom.moves);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(index);
+        result = 31 * result + Arrays.hashCode(moves);
+        return result;
     }
 }

@@ -10,12 +10,15 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 public class SimulationPresenter implements MapChangeListener {
@@ -36,6 +39,10 @@ public class SimulationPresenter implements MapChangeListener {
     private Stage primaryStage;
     private boolean firstClick=true;
 
+    private static final Image GRASS = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/grass128.png")).toExternalForm());
+    private static final Image ANIMAL = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/paw128.png")).toExternalForm());
+
+
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
@@ -46,10 +53,10 @@ public class SimulationPresenter implements MapChangeListener {
         });
     }
 
-    public static void setArguments(Arguments args){
-        // sie okaze czy cos tu bedzie
-        // argumenty sa w args juz
-    }
+//    public static void setArguments(Arguments args){
+//        // sie okaze czy cos tu bedzie
+//        // argumenty sa w args juz
+//    }
 
     public void setWorldMap(RectangularMap rMap){
         this.rMap = rMap;
@@ -80,27 +87,33 @@ public class SimulationPresenter implements MapChangeListener {
                 if (worldMap.objectAt(new Vector2d(i, j)) != null) {
 //                    Label label = new Label(worldMap.objectAt(new Vector2d(i, j)).toString());
                     String path = worldMap.objectAt(new Vector2d(i, j)).toString();
+
 //                    Image image = new Image(Objects.requireNonNull(getClass().getResource(path)).toExternalForm());
 //                    ImageView imageView = new ImageView(image);
-//
-//                    imageView.setFitWidth(CELL_WIDTH);
-//                    imageView.setFitHeight(CELL_HEIGHT);
+                    ImageView imageView;
+
                     Label label = new Label("*");
                     if (path.equals("/images/paw128.png")) {
-//                        imageView.setRotate(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI() * 45);
+                        imageView = new ImageView(ANIMAL);
+                        imageView.setRotate(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI() * 45);
                         label.setText("A");
                     }
+                    else{
+                        imageView = new ImageView(GRASS);
+                    }
+                    imageView.setFitWidth(CELL_WIDTH);
+                    imageView.setFitHeight(CELL_HEIGHT);
                     label.setAlignment(Pos.CENTER);
                     int adjustedI = i - bottomLeft.getX() ;
                     int adjustedJ = colSize  - (j - bottomLeft.getY()) -1;
 
-                    mapGrid.add(label, adjustedI, adjustedJ);
+                    mapGrid.add(imageView, adjustedI, adjustedJ);
                 }
             }
         }
-
-        dayLabel.setText("Day " + Simulation.getDay());
-        numberOfAnimals.setText("Number of animals " + Simulation.numberOfAnimals());
+//        int date = Simulation.getDay();
+        dayLabel.setText("Day " + rMap.getDay());
+        numberOfAnimals.setText("Number of animals " + rMap.numberOfAnimals());
         data2.setText("Most populat genom: " + Arrays.toString(simulation.getMostPopularGenom()) +"\nGrassFields: "+ rMap.getGrassFields() + "\nAverage Energy Level: "+ simulation.averageEnergyLevel()+"\nAverage child count: "+simulation.averageChildrenCount()+"\nAverage Dead Animal Age: " + simulation.averageAge());
     }
 

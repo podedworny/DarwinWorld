@@ -13,14 +13,23 @@ public class RectangularMap {
     private final int fields;
     private int grassFields = 0;
     protected final Map<Vector2d, List<Animal>> animals = new HashMap<>();
+    private int countAnimals = 0;
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
+    private int day = 0;
+
     public RectangularMap(Arguments args) {
         this.args = args;
         this.width = args.mapWidth();
         this.height = args.mapHeight();
         this.fields = this.width*this.height;
+        countAnimals += args.animalInitNumber();
     }
-
+    protected void plusAnimal(){
+        countAnimals++;
+    }
+    protected void minusAnimal(){
+        countAnimals--;
+    }
     public int getWidth() {
         return width;
     }
@@ -136,11 +145,11 @@ public class RectangularMap {
         int y;
         int mapPart = random.nextInt(10);
         if (mapPart < 8)
-            y = height / 5 + random.nextInt(height * 3 / 5 + height % 2); // równik
+            y = height *2 / 5 + random.nextInt(height / 5 + height % 2); // równik
         else if(mapPart == 8 )
-            y = random.nextInt(height / 5); // dolna część
+            y = random.nextInt(height * 2 / 5); // dolna część
         else
-            y = height * 4 / 5 + height % 2 + random.nextInt(height / 5); // górna część
+            y = height * 3 / 5 + height % 2 + random.nextInt(height * 2/ 5); // górna część
         return y;
     }
 
@@ -159,6 +168,7 @@ public class RectangularMap {
             grasses.put(position,grass);
             grassFields++;
         }
+        day++;
         mapChanged("123");
     }
     public boolean isOccupied(Vector2d position){
@@ -189,6 +199,14 @@ public class RectangularMap {
     @Override
     public String toString() {
         return new MapVisualizer(this).draw(new Vector2d(0,0),new Vector2d(width,height));
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public int numberOfAnimals() {
+        return countAnimals;
     }
 }
 

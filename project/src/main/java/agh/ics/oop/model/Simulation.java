@@ -4,12 +4,12 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Simulation implements Runnable{
-    private static final List<Animal> animalList = new LinkedList<>(); //linked list bo do usuwania umierajacych przechodzimy po nich i usuwamy w O(1)
+    private final List<Animal> animalList = new LinkedList<>(); //linked list bo do usuwania umierajacych przechodzimy po nich i usuwamy w O(1)
 //    private final List<Animal> deadAnimalList = new LinkedList<>(); // martwe zwierzaki aby policzyc srednia wieku
     private final List<Animal> allAnimalList = new LinkedList<>(); // wszystkie zyjace zwierzaki kiedykolwiek
     private final RectangularMap map; //    private final WorldMap map;
     private final Arguments args;
-    private static int day= 0;
+    private int day= 0;
     private final Map<MapDirection[], Integer> genomDictionary = new HashMap<>();
     private SimulationState state = SimulationState.STARTED;
     private int deadAnimals = 0;
@@ -65,6 +65,7 @@ public class Simulation implements Runnable{
                         state = SimulationState.FINISHED;
                         System.err.println("KONIEC");
                     }
+//                    System.out.println(Thread.currentThread().getId());
                 }
                 case STOPED -> sleep(100);
                 case FINISHED -> {
@@ -74,6 +75,7 @@ public class Simulation implements Runnable{
 
         }
     }
+
     public static void sleep(int milliseconds) {
         try {
             Thread sleepingThread = new Thread(() -> {
@@ -89,16 +91,17 @@ public class Simulation implements Runnable{
             e.printStackTrace();
         }
     }
+
     private void descendantCounting() {
         for (Animal animal : allAnimalList)
             animal.descendantCalculate();
     }
 
-    public static int getDay() {
+    public int getDay() {
         return day;
     }
 
-    public static int numberOfAnimals() {
+    public int numberOfAnimals() {
         return animalList.size();
     }
 
@@ -117,6 +120,7 @@ public class Simulation implements Runnable{
                 genomDictionary.compute(animal.getGenom().getMoves(), (key, value) -> (value <= 1) ? null : value - 1);
                 iterator.remove();
                 map.removeAnimal(animal);
+                map.minusAnimal();
             }
         }
     }
@@ -143,6 +147,7 @@ public class Simulation implements Runnable{
                 animalList.add(kid);
                 allAnimalList.add(kid);
                 genomDictionary.compute(kid.getGenom().getMoves(), (key, value) -> (value == null) ? 1 : value + 1);
+                map.plusAnimal();
             }
         }
     }

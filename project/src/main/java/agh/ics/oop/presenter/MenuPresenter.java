@@ -84,7 +84,7 @@ public class MenuPresenter implements Initializable {
         loader.setLocation(SimulationApp.class.getClassLoader().getResource("simulation.fxml"));
         BorderPane viewRoot = loader.load();
 
-        SimulationPresenter.setArguments(args);
+//        SimulationPresenter.setArguments(args);
         SimulationPresenter presenter = loader.getController();
 
         presenter.setPrimaryStage(primaryStage);
@@ -128,7 +128,7 @@ public class MenuPresenter implements Initializable {
         grassEnergy.setTextFormatter(createIntegerTextFormatter(10, 1000));
         copulationEnergy.setTextFormatter(createIntegerTextFormatter(30, 1000));
         animalEnergy.setTextFormatter(createIntegerTextFormatter(50, 1000));
-        energyCost.setTextFormatter(createIntegerTextFormatter(10, 1000));
+        energyCost.setTextFormatter(createIntegerTextFormatter(1, 1000));
         animalInitNumber.setTextFormatter(createIntegerTextFormatter(10, 1000));
         grassEachDay.setTextFormatter(createIntegerTextFormatter(5, 1000));
         coolDown.setTextFormatter(createIntegerTextFormatter(20, 1000));

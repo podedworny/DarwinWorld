@@ -20,12 +20,22 @@ public abstract class AbstractMap implements IMap{
     private int sumDaysOfDeadAnimals=0;
     private int deadAnimals = 0;
     private int grassFields = 0;
+    private int equatorBottom = 0;
+    private int equatorHeight = 0;
+    private int equatorFields = 0;
+    private int equatorGrassFields = 0;
+    private int worseFieldsGrass = 0;
+    private int worseFields = 0;
 
     public AbstractMap(Arguments args, MapChangeListener observer){
         this.args = args;
         this.width = args.mapWidth();
         this.height = args.mapHeight();
         this.fields = this.width * this.height;
+        this.equatorBottom =  this.height * 2 / 5;
+        this.equatorHeight =  this.height / 5 + this.height % 2;
+        this.equatorFields = this.width * equatorHeight;
+        this.worseFields = this.fields - this.equatorFields;
         addObserver(observer);
 
         placeStartAnimals(args);
@@ -59,21 +69,41 @@ public abstract class AbstractMap implements IMap{
 
     public void placeNewGrass(int grassCount){
         Random random = new Random();
-        for (int i=0; i<grassCount; i++) {
+        for (int i=0; i<grassCount && grassFields < fields; i++) {
+            boolean status = random.nextInt(100) < 80;
             int x = random.nextInt(width);
-            int y = setPositionY();
-            Vector2d position = new Vector2d(x, y);
-            while (grassFields<=fields && grasses.get(position)!=null){
+            int y = setPositionY(status);
+
+            Vector2d position;
+            while (grasses.get(position = new Vector2d(x, y)) != null &&
+                    ((status && equatorGrassFields < equatorFields) || (!status && worseFieldsGrass < worseFields))) {
                 x = random.nextInt(width);
-                y = setPositionY();
-                position = new Vector2d(x, y);
+                y = setPositionY(status);
             }
-            Grass grass = new Grass(position,args.grassEnergy());
-            grasses.put(position,grass);
-            grassFields++;
+
+            if (grasses.get(position)==null){
+                if (status && equatorGrassFields < equatorFields) equatorGrassFields++;
+                if (!status && worseFieldsGrass < worseFields) worseFieldsGrass++;
+                grasses.put(position, new Grass(position,args.grassEnergy()));
+                grassFields++;
+            }
         }
         day++;
         mapChanged();
+    }
+
+    private int setPositionY(boolean status){ // ================
+        Random random = new Random();
+        if (status) {
+            return equatorBottom + random.nextInt(equatorHeight);
+        }
+        else {
+            int y = random.nextInt(height - equatorHeight);
+            if (y < equatorBottom)
+                return y;
+            else
+                return y + equatorHeight;
+        }
     }
 
     public void eatGrass(){
@@ -180,19 +210,6 @@ public abstract class AbstractMap implements IMap{
             }
         }
         return newMoves;
-    }
-
-    private int setPositionY(){ // ================
-        Random random = new Random();
-        int y;
-        int mapPart = random.nextInt(10);
-        if (mapPart < 8)
-            y = height *2 / 5 + random.nextInt(height / 5 + height % 2); // równik
-        else if(mapPart == 8 )
-            y = random.nextInt(height * 2 / 5); // dolna część
-        else
-            y = height * 3 / 5 + height % 2 + random.nextInt(height * 2/ 5); // górna część
-        return y;
     }
 
     public MapDirection[] getMostPopularGenom(){ // ================

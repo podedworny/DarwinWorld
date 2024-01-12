@@ -18,16 +18,29 @@ public enum MapDirection {
         return i;
     }
 
+//    public String toString(){
+//        return switch(this) {
+//            case N -> "Północ";
+//            case S -> "Południe";
+//            case NE -> "Północny-Wschód";
+//            case E -> "Wschód";
+//            case W -> "Zachód";
+//            case SE -> "Południowy-Wschód";
+//            case SW -> "Południowy-Zachód";
+//            case NW -> "Północny-Zachód";
+//        };
+//    }
+
     public String toString(){
         return switch(this) {
-            case N -> "Północ";
-            case S -> "Południe";
-            case NE -> "Północny-Wschód";
-            case E -> "Wschód";
-            case W -> "Zachód";
-            case SE -> "Południowy-Wschód";
-            case SW -> "Południowy-Zachód";
-            case NW -> "Północny-Zachód";
+            case N -> "N";
+            case S -> "S";
+            case NE -> "NE";
+            case E -> "E";
+            case W -> "W";
+            case SE -> "SE";
+            case SW -> "SW";
+            case NW -> "NW";
         };
     }
     public MapDirection next(){
@@ -40,6 +53,19 @@ public enum MapDirection {
             case SW -> W;
             case W -> NW;
             case NW -> N;
+        };
+    }
+
+    public MapDirection opposite(){
+        return switch(this){
+            case N -> S;
+            case NE -> SW;
+            case E -> W;
+            case SE -> NW;
+            case S -> N;
+            case SW -> NE;
+            case W -> E;
+            case NW -> SE;
         };
     }
 

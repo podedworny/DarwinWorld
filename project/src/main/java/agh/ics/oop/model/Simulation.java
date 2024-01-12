@@ -1,35 +1,69 @@
 package agh.ics.oop.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Simulation implements Runnable{
-    private final List<Animal> AnimalList = new ArrayList<>();
-    private final RectangularMap map; //    private final WorldMap map;
-    private final int grassCount;
+    private final IMap map;
+    private final int coolDown;
+    private final int grassEachDay;
+    private SimulationState state = SimulationState.STARTED;
 
-    public Simulation(int startingNumberOfAnimals, int startingEnergy , int genomLenght, RectangularMap map, int grassCount) {
+
+    public Simulation(int coolDown, int grassEachDay, IMap map) {
         this.map = map;
-        this.grassCount = grassCount;
-        // konstruktor symulacji
-
-        for (int i=0; i<startingNumberOfAnimals; i++){
-            Animal animal = new Animal(map.getWidth(),map.getHeight(), startingEnergy, genomLenght);
-            AnimalList.add(animal);
-            map.placeNewAnimal(animal);
-        }
-        map.placeNewGrass(grassCount);
-
-        //...
+        this.coolDown = coolDown;
+        this.grassEachDay = grassEachDay;
     }
+
+    public void setState(SimulationState state) {
+        if(this.state!=SimulationState.FINISHED)
+            this.state = state;
+    }
+
+    public void stopSimulation() {
+        state = SimulationState.STOPED;
+    }
+
     public void run(){
-        //Usunięcie martwych zwierzaków z mapy.
-//        Skręt i przemieszczenie każdego zwierzaka.
-//        Konsumpcja roślin, na których pola weszły zwierzaki.
-//        Rozmnażanie się najedzonych zwierzaków znajdujących się na tym samym polu.
-//        Wzrastanie nowych roślin na wybranych polach mapy.
+        while (true) {
+            switch (state) {
+                case STARTED -> {
+                    map.deleteDeadAnimals();
+                    map.moveAnimals();
+                    map.eatGrass();
+                    map.reproduce();
+                    map.placeNewGrass(grassEachDay);
+                    map.descendantCounting();
+                    map.animalsNextDate();
+                    try {
+                        Thread.sleep(coolDown);
+                    }
+                    catch (Exception ignored){}
+                    if(map.numberOfAnimals() == 0)
+                        state = SimulationState.FINISHED;
+                }
+                case STOPED -> sleep(100);
+                case FINISHED -> {
+                    return;
+                }
+            }
 
+        }
     }
 
+    public static void sleep(int milliseconds) {
+        try {
+            Thread sleepingThread = new Thread(() -> {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(milliseconds);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            sleepingThread.start();
+            sleepingThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
-

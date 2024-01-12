@@ -1,15 +1,21 @@
 package agh.ics.oop.model;
 
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 
-public class Animal implements Comparable<Animal>{
+public class Animal implements WorldElement{
+    private final int myId;
+    static int id;
     private Vector2d position; // pozycja
     private MapDirection orientation; // orientacja
     private final Genom genom; //nasz genom
     private int energy; //poziom energii
     private int age; //wiek
-    private int childrencount; // liczba dzieci
+    private int childrenCount = 0; // liczba dzieci
+    private int deathDate; // dzien smierci
+    private int descendantCount; // liczba potomkow
+    private int grassEaten; // liczba zjedzonej trawy
+    protected final List<Animal> kids = new LinkedList<>(); // lista dzieci
+
 
     public Animal(Vector2d pos, int energy, Genom genom){
         MapDirection[] directions = MapDirection.values();
@@ -19,7 +25,8 @@ public class Animal implements Comparable<Animal>{
         this.energy = energy; // ilosc energii i jak wyglada genom tworzymy w sex-metodzie
         this.genom = genom;
         age = 0;
-        childrencount = 0;
+        childrenCount = 0;
+        myId = id++;
     }
 
     public Animal(int width, int height, int energy, int genomLen){ // konstruktor tylko do stworzenia animali na poczatku
@@ -30,35 +37,82 @@ public class Animal implements Comparable<Animal>{
         this.energy = energy;
         this.genom = new Genom(genomLen);
         age = 0;
-        childrencount = 0;
+        childrenCount = 0;
+        myId = id++;
     }
 
-    public void move(){
+    public void move(IMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
+        MapDirection[] mapValues = MapDirection.values();
         MapDirection[] genomTab = genom.getMoves();
         int ind = genom.getIndex();
-        //energy--; // zmniejszanie energii
-        // canMoveTo na to pole
-        position.add(genomTab[ind].toUnitVector()); //(zmiana jego pozycji)
-        for (int i=0; i<genomTab[ind].getI();i++){  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
+
+        for (int i=0; i<mapValues[genomTab[ind].getI()].getI();i++){  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
             orientation = orientation.next();
-        } // trzeba sprawdzac czy wychodzi poza mape a jak tak to zmienic jego orientacje lub pozycje
+        }
+
+        Vector2d newPosition = position.add(orientation.toUnitVector());//(zmiana jego pozycji)
+
+        if(newPosition.getX()==-1){
+            newPosition = new Vector2d(map.getWidth()-1,newPosition.getY());
+        }
+        else if(newPosition.getX()==map.getWidth()){
+            newPosition = new Vector2d(0,newPosition.getY());
+        }
+
+        if(newPosition.getY()==-1){
+            newPosition = new Vector2d(newPosition.getX(),0);
+            orientation = orientation.opposite();
+        }
+        else if(newPosition.getY()== map.getHeight()){
+            newPosition = new Vector2d(newPosition.getX(), map.getHeight()-1);
+            orientation = orientation.opposite();
+        }
+        position = newPosition;
+//        if (map.canMoveTo(newPosition)) // ustawianie nowej pozycji jezeli git
+//            position = newPosition; // to w sumie dla rMap sie wydaje bez sensu, bo wyzej ustawilismy tak ze zawsze musi byc git
+//                                    // ale dla wody bedzie przydatne, najwyzej sie zmieni
     }
 
     public Vector2d getPosition(){
         return position;
     }
 
-    public Comparator<Animal> comparator(){
-        return Comparator
-                .comparingInt((Animal a) -> a.energy)
-                .thenComparingInt(a -> a.age)
-                .thenComparingInt(a -> a.childrencount)
-                .thenComparing(a -> new Random().nextInt());
+
+    @Override
+    public boolean isAt(Vector2d position) {
+        return this.position.equals(position);
     }
 
     @Override
-    public int compareTo(Animal animal) {
-        return comparator().compare(this, animal);
+    public MapDirection getOrientation() {
+        return orientation;
+    }
+
+    public void decreaseEnergy(int energyLevel){
+        energy -= energyLevel;
+    }
+    public void newKid(){
+        childrenCount++;
+    }
+
+    public void nextDay(){
+        age++;
+    }
+
+    public void setDeathDate(int deathDate){
+        this.deathDate = deathDate;
+    }
+
+    public void eatGrass(int grassEnergy){
+        energy += grassEnergy;
+        grassEaten++;
+    }
+
+    public static Comparator<Animal> animalComparator(){
+        return Comparator.comparing(Animal::getEnergy, Comparator.reverseOrder())
+                .thenComparing(Animal::getAge, Comparator.reverseOrder())
+                .thenComparing(Animal::getChildrenCount, Comparator.reverseOrder())
+                .thenComparing(animal -> new Random().nextBoolean());
     }
 
     public Genom getGenom() {
@@ -67,5 +121,57 @@ public class Animal implements Comparable<Animal>{
 
     public int getEnergy() {
         return energy;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public int getChildrenCount() {
+        return childrenCount;
+    }
+
+    public int getDeathDate(){
+        return deathDate;
+    }
+
+    public int getDescendantCount(){
+        return descendantCount;
+    }
+
+    public int getGrassEaten(){
+        return grassEaten;
+    }
+
+    public void addKid(Animal animal){
+        kids.add(animal);
+    }
+    @Override
+    public String toString() {
+        return "/images/paw128.png";
+    }
+    public int descendantCalculate(){
+        if (kids.isEmpty())
+            return 0;
+        int result = childrenCount;
+        for (Animal kid : kids){
+            result += kid.descendantCalculate();
+        }
+        descendantCount = result;
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Animal animal = (Animal) o;
+        return myId == animal.myId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(myId);
     }
 }

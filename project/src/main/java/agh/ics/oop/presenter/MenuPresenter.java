@@ -1,12 +1,12 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.SimulationApp;
-import agh.ics.oop.SimulationEngine;
 import agh.ics.oop.model.Arguments;
 import agh.ics.oop.model.RectangularMap;
+import agh.ics.oop.model.IMap;
 import agh.ics.oop.model.Simulation;
+import agh.ics.oop.model.WaterMap;
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,11 +17,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
@@ -49,6 +47,8 @@ public class MenuPresenter implements Initializable {
     private javafx.scene.control.Label waterMapLabel;
     @FXML
     private TextField waterMapTextField;
+
+    IMap map;
 
     public void startSimulation() throws Exception {
         String mapa = mapType.getValue();
@@ -89,13 +89,16 @@ public class MenuPresenter implements Initializable {
 
         presenter.setPrimaryStage(primaryStage);
 
-        RectangularMap rMap = new RectangularMap(args);
-        rMap.addObserver(presenter);
-        presenter.setWorldMap(rMap);
+
+        if ("Normal map".equals(mapa))
+            map = new RectangularMap(args, presenter);
+        else
+            map = new WaterMap(args, presenter);
+        presenter.setWorldMap(map);
 
         configureStage(primaryStage, viewRoot);
 
-        Simulation simulation = new Simulation(args, rMap);
+        Simulation simulation = new Simulation(args.coolDown(), args.grassEachDay(), map);
         presenter.setSimulation(simulation);
 
         primaryStage.show();

@@ -1,12 +1,7 @@
 package agh.ics.oop;
 
-import agh.ics.oop.model.Arguments;
-import agh.ics.oop.model.ConsoleMapDisplay;
-import agh.ics.oop.model.RectangularMap;
-import agh.ics.oop.model.Simulation;
 import javafx.application.Application;
 
-import java.io.Console;
 
 public class World {
     public static void main(String[] args) {

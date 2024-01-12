@@ -29,7 +29,7 @@ public class SimulationPresenter implements MapChangeListener {
     public SplitPane mainSplitPane;
     public Label data1;
     public Label data2;
-    private RectangularMap rMap;
+    private IMap map;
     @FXML
     private Label simulationLabel;
     @FXML
@@ -58,12 +58,12 @@ public class SimulationPresenter implements MapChangeListener {
 //        // argumenty sa w args juz
 //    }
 
-    public void setWorldMap(RectangularMap rMap){
-        this.rMap = rMap;
+    public void setWorldMap(IMap map){
+        this.map = map;
     }
 
 
-    public void drawMap(RectangularMap worldMap) {
+    public void drawMap(IMap worldMap) {
         mapGrid.setAlignment(Pos.CENTER);
         int CELL_WIDTH = 15;
         int CELL_HEIGHT = 15;
@@ -112,13 +112,13 @@ public class SimulationPresenter implements MapChangeListener {
             }
         }
 //        int date = Simulation.getDay();
-        dayLabel.setText("Day " + rMap.getDay());
-        numberOfAnimals.setText("Number of animals " + rMap.numberOfAnimals());
-        data2.setText("Most populat genom: " + Arrays.toString(simulation.getMostPopularGenom()) +"\nGrassFields: "+ rMap.getGrassFields() + "\nAverage Energy Level: "+ simulation.averageEnergyLevel()+"\nAverage child count: "+simulation.averageChildrenCount()+"\nAverage Dead Animal Age: " + simulation.averageAge());
+        dayLabel.setText("Day " + worldMap.getDay());
+        numberOfAnimals.setText("Number of animals " + worldMap.numberOfAnimals());
+        data2.setText("Most populat genom: " + Arrays.toString(worldMap.getMostPopularGenom()) +"\nGrassFields: "+ worldMap.getGrassFields() + "\nAverage Energy Level: "+ worldMap.averageEnergyLevel()+"\nAverage child count: "+ worldMap.averageChildrenCount()+"\nAverage Dead Animal Age: " + worldMap.averageAge());
     }
 
     @Override
-    public void mapChanged(RectangularMap worldMap, String message) {
+    public void mapChanged(IMap worldMap) {
         Platform.runLater(() -> {
             clearGrid();
             drawMap(worldMap);

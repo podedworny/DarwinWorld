@@ -41,7 +41,7 @@ public class Animal implements WorldElement{
         myId = id++;
     }
 
-    public void move(RectangularMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
+    public void move(IMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
         MapDirection[] mapValues = MapDirection.values();
         MapDirection[] genomTab = genom.getMoves();
         int ind = genom.getIndex();

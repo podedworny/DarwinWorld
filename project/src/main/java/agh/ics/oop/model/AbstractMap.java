@@ -289,4 +289,7 @@ public abstract class AbstractMap implements IMap{
             observer.mapChanged(this);
         }
     }
+    public Animal getAnimal(Vector2d position){
+        return animals.get(position).get(0);
+    }
 }

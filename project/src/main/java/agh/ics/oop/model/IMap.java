@@ -45,4 +45,5 @@ public interface IMap {
     double averageChildrenCount();
 
     double averageAge();
+    Animal getAnimal(Vector2d position);
 }

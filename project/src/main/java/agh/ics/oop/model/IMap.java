@@ -47,4 +47,5 @@ public interface IMap {
     double averageAge();
     boolean canMoveTo(Vector2d position);
     Vector2d getNewPosition(Vector2d position, MapDirection direction);
+    Animal getAnimal(Vector2d position);
 }

@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
@@ -15,10 +16,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+
 import java.util.Objects;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 
 public class SimulationPresenter implements MapChangeListener {
@@ -29,6 +32,7 @@ public class SimulationPresenter implements MapChangeListener {
     public SplitPane mainSplitPane;
     public Label data1;
     public Label data2;
+    public AnchorPane rightSide;
     private IMap map;
     @FXML
     private Label simulationLabel;
@@ -62,62 +66,64 @@ public class SimulationPresenter implements MapChangeListener {
         this.map = map;
     }
 
-
     public void drawMap(IMap worldMap) {
         mapGrid.setAlignment(Pos.CENTER);
-        int CELL_WIDTH = 15;
-        int CELL_HEIGHT = 15;
+        int CELL = min(900 / worldMap.getHeight(),1400 / worldMap.getWidth());
+
         Arguments args = worldMap.getArgs();
         Vector2d topRight = new Vector2d(args.mapWidth(),args.mapHeight());
         Vector2d bottomLeft = new Vector2d(0,0);
+
         int rowSize = args.mapWidth();
         int colSize = args.mapHeight();
         for (int j = 0; j < rowSize; j++) {
-            ColumnConstraints column = new ColumnConstraints(CELL_WIDTH);
+            ColumnConstraints column = new ColumnConstraints(CELL);
             mapGrid.getColumnConstraints().add(column);
         }
 
         for (int i = 0; i < colSize; i++) {
-            RowConstraints row = new RowConstraints(CELL_HEIGHT);
+            RowConstraints row = new RowConstraints(CELL);
             mapGrid.getRowConstraints().add(row);
         }
+
 
         for (int i = bottomLeft.getX(); i < topRight.getX(); i++) {
             for (int j = bottomLeft.getY(); j < topRight.getY(); j++) {
                 if (worldMap.objectAt(new Vector2d(i, j)) != null) {
-//                    Label label = new Label(worldMap.objectAt(new Vector2d(i, j)).toString());
                     String path = worldMap.objectAt(new Vector2d(i, j)).toString();
-
-//                    Image image = new Image(Objects.requireNonNull(getClass().getResource(path)).toExternalForm());
-//                    ImageView imageView = new ImageView(image);
-                    ImageView imageView;
-
-                    Label label = new Label("*");
+                    ImageBox imageBox = null;
                     if (path.equals("/images/paw128.png")) {
-                        imageView = new ImageView(ANIMAL);
-                        imageView.setRotate(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI() * 45);
-                        label.setText("A");
+                        Animal animal = worldMap.getAnimal(new Vector2d(i, j));
+                        if (animal!=null) {
+                            imageBox = new ImageBox(ANIMAL,animal.getEnergy(),worldMap.getArgs().animalEnergy());
+                            imageBox.setRotation(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI());
+                            imageBox.setFit(CELL * 0.7);
+                        }
                     }
                     else if (path.equals("/images/water128.png")){
                         imageView = new ImageView(WATER);
                     }
                     else{
-                        imageView = new ImageView(GRASS);
+                        imageBox= new ImageBox(GRASS);
+                        imageBox.setFit(CELL);
                     }
-                    imageView.setFitWidth(CELL_WIDTH);
-                    imageView.setFitHeight(CELL_HEIGHT);
-                    label.setAlignment(Pos.CENTER);
+
                     int adjustedI = i - bottomLeft.getX() ;
                     int adjustedJ = colSize  - (j - bottomLeft.getY()) -1;
-
-                    mapGrid.add(imageView, adjustedI, adjustedJ);
+                    if (imageBox!=null)
+                        mapGrid.add(imageBox, adjustedI, adjustedJ);
                 }
             }
         }
-//        int date = Simulation.getDay();
         dayLabel.setText("Day " + worldMap.getDay());
         numberOfAnimals.setText("Number of animals " + worldMap.numberOfAnimals());
-        data2.setText("Most populat genom: " + Arrays.toString(worldMap.getMostPopularGenom()) +"\nGrassFields: "+ worldMap.getGrassFields() + "\nAverage Energy Level: "+ worldMap.averageEnergyLevel()+"\nAverage child count: "+ worldMap.averageChildrenCount()+"\nAverage Dead Animal Age: " + worldMap.averageAge());
+        data2.setText("Most populat genom: "
+                + Arrays.toString(worldMap.getMostPopularGenom())
+                + "\nGrassFields: "+ worldMap.getGrassFields()
+                + "\nAverage Energy Level: "
+                + worldMap.averageEnergyLevel()+"\nAverage child count: "
+                + worldMap.averageChildrenCount()+"\nAverage Dead Animal Age: "
+                + worldMap.averageAge());
     }
 
     @Override

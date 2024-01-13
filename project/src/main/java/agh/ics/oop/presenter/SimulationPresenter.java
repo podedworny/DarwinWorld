@@ -101,7 +101,8 @@ public class SimulationPresenter implements MapChangeListener {
                         }
                     }
                     else if (path.equals("/images/water128.png")){
-                        imageView = new ImageView(WATER);
+                        imageBox = new ImageBox(WATER);
+                        imageBox.setFit(CELL);
                     }
                     else{
                         imageBox= new ImageBox(GRASS);

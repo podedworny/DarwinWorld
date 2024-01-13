@@ -11,10 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
@@ -42,6 +39,10 @@ public class MenuPresenter implements Initializable {
     public ComboBox<String> variant;
     public TextField coolDown;
     public Button commitButton;
+    public TextField waterMapDaysTextField;
+    public Label waterMapDaysLabel;
+    public Label waterMapPercentageLabel;
+    public TextField waterMapPercentageTextField;
 
     @FXML
     private javafx.scene.control.Label waterMapLabel;
@@ -56,6 +57,8 @@ public class MenuPresenter implements Initializable {
             waterMapTextField.setText("0");
         }
         int waterNumber = Integer.parseInt(waterMapTextField.getText());
+        int waterPercentage = Integer.parseInt(waterMapPercentageTextField.getText());
+        int waterDays = Integer.parseInt(waterMapDaysTextField.getText());
         int mapW = Integer.parseInt(mapWidth.getText());
         int mapH = Integer.parseInt(mapHeight.getText());
         int grassE = Integer.parseInt(grassEnergy.getText());
@@ -76,7 +79,7 @@ public class MenuPresenter implements Initializable {
 
         Arguments args = new Arguments(mapa,mapW,mapH, grassE, copulationE,
                 animalE, energyC, animalInitN, grassEachD, coolD,grassStart,
-                energyT, minM, maxM, genomL, var, waterNumber);
+                energyT, minM, maxM, genomL, var, waterNumber,waterPercentage,waterDays);
 
 
         Stage primaryStage = new Stage();
@@ -118,14 +121,24 @@ public class MenuPresenter implements Initializable {
 
         mapType.valueProperty().addListener((observable, oldValue, newValue) -> {
             if ("Water map".equals(newValue)) {
-                waterMapLabel.setVisible(true);
-                waterMapTextField.setVisible(true);
+                waterMapTextField.setEditable(true);
+                waterMapTextField.setDisable(false);
+                waterMapDaysTextField.setEditable(true);
+                waterMapDaysTextField.setDisable(false);
+                waterMapPercentageTextField.setEditable(true);
+                waterMapPercentageTextField.setDisable(false);
             } else {
-                waterMapLabel.setVisible(false);
-                waterMapTextField.setVisible(false);
+                waterMapTextField.setEditable(false);
+                waterMapTextField.setDisable(true);
+                waterMapDaysTextField.setEditable(false);
+                waterMapDaysTextField.setDisable(true);
+                waterMapPercentageTextField.setEditable(false);
+                waterMapPercentageTextField.setDisable(true);
             }
         });
         waterMapTextField.setTextFormatter(createIntegerTextFormatter(10,1000)); // powinny byc inne ograniczenia
+        waterMapDaysTextField.setTextFormatter(createIntegerTextFormatter(7,1000));
+        waterMapPercentageTextField.setTextFormatter(createIntegerTextFormatter(50,1000));
         mapWidth.setTextFormatter(createIntegerTextFormatter(30, 1000));
         mapHeight.setTextFormatter(createIntegerTextFormatter(30, 1000));
         grassEnergy.setTextFormatter(createIntegerTextFormatter(10, 1000));

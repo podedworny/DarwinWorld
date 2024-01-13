@@ -45,4 +45,6 @@ public interface IMap {
     double averageChildrenCount();
 
     double averageAge();
+    boolean canMoveTo(Vector2d position);
+    Vector2d getNewPosition(Vector2d position, MapDirection direction);
 }

@@ -41,7 +41,7 @@ public class SimulationPresenter implements MapChangeListener {
 
     private static final Image GRASS = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/grass128.png")).toExternalForm());
     private static final Image ANIMAL = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/paw128.png")).toExternalForm());
-
+    private static final Image WATER = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/water128.png")).toExternalForm());
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -97,6 +97,9 @@ public class SimulationPresenter implements MapChangeListener {
                         imageView = new ImageView(ANIMAL);
                         imageView.setRotate(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI() * 45);
                         label.setText("A");
+                    }
+                    else if (path.equals("/images/water128.png")){
+                        imageView = new ImageView(WATER);
                     }
                     else{
                         imageView = new ImageView(GRASS);

@@ -6,6 +6,7 @@ public class Simulation implements Runnable{
     private final IMap map;
     private final int coolDown;
     private final int grassEachDay;
+
     private SimulationState state = SimulationState.STARTED;
 
 

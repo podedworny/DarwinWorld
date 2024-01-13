@@ -7,16 +7,16 @@ import static java.lang.Math.round;
 public abstract class AbstractMap implements IMap{
     private final List<MapChangeListener> observers = new ArrayList<>();
     private final List<Animal> allAnimalList = new LinkedList<>(); // wszystkie zyjace zwierzaki kiedykolwiek
-    private final List<Animal> animalList = new LinkedList<>();
+    protected final List<Animal> animalList = new LinkedList<>();
     protected final Map<Vector2d, List<Animal>> animals = new HashMap<>();
-    private final Map<Vector2d, Grass> grasses = new HashMap<>();
+    protected final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final Map<MapDirection[], Integer> genomDictionary = new HashMap<>();
-    private Animal fatherOfFathers = new Animal(new Vector2d(0,0),0,new Genom(1));
+    private final Animal fatherOfFathers = new Animal(new Vector2d(0,0),0,new Genom(1, 1,1));
     protected final Arguments args;
-    private final int width;
+    protected final int width;
     protected final int height;
-    private final int fields;
-    private int day = 0;
+    protected final int fields;
+    protected int day = 0;
     private int sumDaysOfDeadAnimals=0;
     private int deadAnimals = 0;
     private int grassFields = 0;
@@ -39,7 +39,7 @@ public abstract class AbstractMap implements IMap{
         addObserver(observer);
 
         placeStartAnimals(args);
-        placeNewGrass(args.grassAtStart());
+        placeStartGrass(args.grassAtStart());
     }
 
     public void move(Animal animal){
@@ -48,7 +48,10 @@ public abstract class AbstractMap implements IMap{
             animal.move(this);
             placeAnimal(animal);
             animal.decreaseEnergy(args.energyCost());
-            animal.getGenom().nextIndexDefault();
+            if (args.variant().equals("Default"))
+                animal.getGenom().nextIndexDefault();
+            else
+                animal.getGenom().nextIndexVariant();
         }
     }
 
@@ -59,7 +62,7 @@ public abstract class AbstractMap implements IMap{
 
     private void placeStartAnimals(Arguments args) {
         for (int i = 0; i< args.animalInitNumber(); i++){
-            Animal animal = new Animal(width,height, args.animalEnergy(), args.genomLenght());
+            Animal animal = new Animal(width,height, args.animalEnergy(), args.genomLenght(), args.minMut(), args.maxMut());
             animalList.add(animal);
             allAnimalList.add(animal);
             placeAnimal(animal);
@@ -67,9 +70,9 @@ public abstract class AbstractMap implements IMap{
         }
     }
 
-    public void placeNewGrass(int grassCount){
+    public void placeGrass(int grassCount, boolean checkCondition) {
         Random random = new Random();
-        for (int i=0; i<grassCount && grassFields < fields; i++) {
+        for (int i = 0; i < grassCount && grassFields < fields; i++) {
             boolean status = random.nextInt(100) < 80;
             int x = random.nextInt(width);
             int y = setPositionY(status);
@@ -81,15 +84,25 @@ public abstract class AbstractMap implements IMap{
                 y = setPositionY(status);
             }
 
-            if (grasses.get(position)==null){
+            if (grasses.get(position) == null && (!checkCondition || canMoveTo(position))) {
                 if (status && equatorGrassFields < equatorFields) equatorGrassFields++;
                 if (!status && worseFieldsGrass < worseFields) worseFieldsGrass++;
-                grasses.put(position, new Grass(position,args.grassEnergy()));
+                grasses.put(position, new Grass(position, args.grassEnergy()));
                 grassFields++;
             }
         }
-        day++;
+//        if (!checkCondition) {
+            day++;
+//        }
         mapChanged();
+    }
+
+    public void placeStartGrass(int grassCount) {
+        placeGrass(grassCount, false);
+    }
+
+    public void placeNewGrass(int grassCount) {
+        placeGrass(grassCount, true);
     }
 
     private int setPositionY(boolean status){ // ================
@@ -230,6 +243,10 @@ public abstract class AbstractMap implements IMap{
         grassFields--;
     }
 
+    public boolean canMoveTo(Vector2d position){
+        return position.getY() >= 0 && position.getY() < height && position.getX() >= 0 && position.getX() <= width;
+    }
+
     public boolean isOccupied(Vector2d position){
         return (animals.get(position) != null || grasses.get(position) != null);
     }
@@ -248,6 +265,15 @@ public abstract class AbstractMap implements IMap{
 
     public void descendantCounting() {
         fatherOfFathers.descendantCalculate();
+    }
+
+    public Vector2d getNewPosition(Vector2d position, MapDirection direction){
+        Vector2d newPosition = position.add(direction.toUnitVector());
+        if (newPosition.getY() == -1) return position;
+        if (newPosition.getY() == height) return position;
+        if (newPosition.getX() == -1) return new Vector2d(width-1, newPosition.getY());
+        if (newPosition.getX() == width) return new Vector2d(0, newPosition.getY());
+        return newPosition;
     }
 
     public int getWidth() {
@@ -301,7 +327,7 @@ public abstract class AbstractMap implements IMap{
         observers.remove(observer);
     }
 
-    private void mapChanged(){
+    protected void mapChanged(){
         for (MapChangeListener observer:observers){
             observer.mapChanged(this);
         }

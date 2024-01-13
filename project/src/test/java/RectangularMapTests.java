@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.TreeSet;
 
 public class RectangularMapTests {
-    Animal a = new Animal(10,10,20,3);
-    Animal b = new Animal(10,10,80,3);
+    Animal a = new Animal(10,10,20,3,1,1);
+    Animal b = new Animal(10,10,80,3,1,1);
 
     @Test
     public void Tests(){

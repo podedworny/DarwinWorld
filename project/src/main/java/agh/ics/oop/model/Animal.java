@@ -29,13 +29,13 @@ public class Animal implements WorldElement{
         myId = id++;
     }
 
-    public Animal(int width, int height, int energy, int genomLen){ // konstruktor tylko do stworzenia animali na poczatku
+    public Animal(int width, int height, int energy, int genomLen, int minMutation, int maxMutation){ // konstruktor tylko do stworzenia animali na poczatku
         MapDirection[] directions = MapDirection.values();
         Random random = new Random();
         this.orientation = directions[random.nextInt(directions.length)];  // losowanie orientacji (oby nie gej)
         this.position = new Vector2d(random.nextInt(width),random.nextInt(height));  // tu bedzie chyba losowanie pozycji
         this.energy = energy;
-        this.genom = new Genom(genomLen);
+        this.genom = new Genom(genomLen, minMutation, maxMutation);
         age = 0;
         childrenCount = 0;
         myId = id++;
@@ -46,31 +46,13 @@ public class Animal implements WorldElement{
         MapDirection[] genomTab = genom.getMoves();
         int ind = genom.getIndex();
 
-        for (int i=0; i<mapValues[genomTab[ind].getI()].getI();i++){  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
+        for (int i=0; i<mapValues[genomTab[ind].getI()].getI();i++)  // obracanie zwierzakiem jak śmigłem (od 0 do 7 razy)
             orientation = orientation.next();
-        }
 
-        Vector2d newPosition = position.add(orientation.toUnitVector());//(zmiana jego pozycji)
+        Vector2d newPosition = map.getNewPosition(position,orientation);//(zmiana jego pozycji)
 
-        if(newPosition.getX()==-1){
-            newPosition = new Vector2d(map.getWidth()-1,newPosition.getY());
-        }
-        else if(newPosition.getX()==map.getWidth()){
-            newPosition = new Vector2d(0,newPosition.getY());
-        }
-
-        if(newPosition.getY()==-1){
-            newPosition = new Vector2d(newPosition.getX(),0);
-            orientation = orientation.opposite();
-        }
-        else if(newPosition.getY()== map.getHeight()){
-            newPosition = new Vector2d(newPosition.getX(), map.getHeight()-1);
-            orientation = orientation.opposite();
-        }
-        position = newPosition;
-//        if (map.canMoveTo(newPosition)) // ustawianie nowej pozycji jezeli git
-//            position = newPosition; // to w sumie dla rMap sie wydaje bez sensu, bo wyzej ustawilismy tak ze zawsze musi byc git
-//                                    // ale dla wody bedzie przydatne, najwyzej sie zmieni
+        if (newPosition.equals(position)) orientation = orientation.opposite();
+        if(map.canMoveTo(newPosition)) position = newPosition;
     }
 
     public Vector2d getPosition(){

@@ -43,8 +43,18 @@
 
 
             <HBox alignment="CENTER" spacing="10">
-                <Label fx:id="waterMapLabel" text="Water Field number:  " visible="false"/>
-                <TextField fx:id="waterMapTextField" visible="false"/>
+                <Label fx:id="waterMapLabel" text="Water Field number:  "/>
+                <TextField fx:id="waterMapTextField" editable="false" disable="true"/>
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label fx:id="waterMapDaysLabel" text="Water days to change:  "/>
+                <TextField fx:id="waterMapDaysTextField" editable="false" disable="true"/>
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label fx:id="waterMapPercentageLabel" text="Water percentage expansion:  "/>
+                <TextField fx:id="waterMapPercentageTextField" editable="false" disable="true"/>
             </HBox>
 
             <HBox alignment="CENTER" spacing="10">

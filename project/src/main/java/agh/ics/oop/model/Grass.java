@@ -2,7 +2,7 @@ package agh.ics.oop.model;
 
 public class Grass implements WorldElement{
     private final Vector2d position;
-    private int Energy;
+    private final int Energy;
     public Grass(Vector2d position, int energy) {
         this.position = position;
         this.Energy = energy;

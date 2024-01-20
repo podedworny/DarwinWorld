@@ -11,11 +11,16 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            minHeight="700.0" minWidth="450.0"
+            minHeight="800.0" minWidth="450.0"
             fx:controller="agh.ics.oop.presenter.MenuPresenter">
     <center>
         <VBox alignment="CENTER" spacing="10">
             <Label text="Map properties" alignment="CENTER" style="-fx-font-weight: bold;"/>
+            <HBox alignment="CENTER" spacing="10" >
+                <Label text="Select preset:"/>
+                <ComboBox fx:id="preset">
+                </ComboBox>
+            </HBox>
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Map width: "/>
                 <TextField fx:id="mapWidth" />
@@ -132,8 +137,15 @@
                 <Label text="Refresh time (ms): "/>
                 <TextField fx:id="coolDown" />
             </HBox>
-
-            <Button fx:id="commitButton" text="Commit" onAction="#startSimulation"/>
+            <HBox alignment="CENTER">
+                <Button fx:id="commitButton" text="Commit" onAction="#startSimulation"/>
+                <Button fx:id="editSet" text="Edit Preset" onAction="#editPreset"/>
+                <Button fx:id="deleteButton" text="Delete Preset" onAction="#deletePreset" />
+            </HBox>
+            <HBox alignment="CENTER">
+                <TextField fx:id="presetName"/>
+                <Button fx:id="saveSet" text="Save New Preset" onAction="#savePreset" disable="true"/>
+            </HBox>
         </VBox>
     </center>
 

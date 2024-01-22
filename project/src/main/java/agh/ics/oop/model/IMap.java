@@ -3,6 +3,7 @@ package agh.ics.oop.model;
 import agh.ics.oop.presenter.SimulationPresenter;
 import javafx.scene.control.SplitPane;
 
+import java.util.List;
 import java.util.Map;
 
 public interface IMap {
@@ -48,4 +49,5 @@ public interface IMap {
     boolean canMoveTo(Vector2d position);
     Vector2d getNewPosition(Vector2d position, MapDirection direction);
     Animal getAnimal(Vector2d position);
+    boolean isWaterMap();
 }

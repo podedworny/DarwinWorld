@@ -35,7 +35,7 @@ public class Water implements WorldElement{
 
     @Override
     public String toString(){
-        return "/images/water128.png";
+        return "water";
     }
 
     @Override

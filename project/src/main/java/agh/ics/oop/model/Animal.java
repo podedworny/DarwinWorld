@@ -113,6 +113,12 @@ public class Animal implements WorldElement{
         return childrenCount;
     }
 
+    public int getMyId() {
+        return myId;
+    }
+    public int getIndex(){
+        return genom.getIndex();
+    }
     public int getDeathDate(){
         return deathDate;
     }
@@ -130,7 +136,7 @@ public class Animal implements WorldElement{
     }
     @Override
     public String toString() {
-        return "/images/paw128.png";
+        return "paw";
     }
     public int descendantCalculate(){
         if (kids.isEmpty())

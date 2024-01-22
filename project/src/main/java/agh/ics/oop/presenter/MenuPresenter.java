@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -174,6 +175,16 @@ public class MenuPresenter implements Initializable {
         maxMut.setTextFormatter(createIntegerTextFormatter(5, 1000));
         genomLen.setTextFormatter(createIntegerTextFormatter(5, 1000));
         initializePresetComboBox();
+//        public Button editSet;
+//        public Button saveSet;
+//        public Button deleteButton;
+        editSet.setCursor(Cursor.HAND);
+        saveSet.setCursor(Cursor.HAND);
+        deleteButton.setCursor(Cursor.HAND);
+        commitButton.setCursor(Cursor.HAND);
+        variant.setCursor(Cursor.HAND);
+        mapType.setCursor(Cursor.HAND);
+        preset.setCursor(Cursor.HAND);
     }
 
     private TextFormatter<Integer> createIntegerTextFormatter(int initialValue, int upperLimit) {

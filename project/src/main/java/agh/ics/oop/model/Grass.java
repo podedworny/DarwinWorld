@@ -27,6 +27,6 @@ public class Grass implements WorldElement{
 
     @Override
     public String toString() {
-        return "/images/grass128.png";
+        return "grass";
     }
 }

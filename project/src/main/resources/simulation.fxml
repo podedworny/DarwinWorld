@@ -9,6 +9,15 @@
 
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.Pane?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             minHeight="1000.0" minWidth="1600.0"
@@ -22,13 +31,12 @@
         </VBox>
     </top>
     <center>
-<!--        <HBox alignment="CENTER">-->
-
         <SplitPane fx:id="mainSplitPane" BorderPane.alignment="CENTER">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-
+                <AnchorPane  minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <VBox fx:id="plotField">
                         <Label fx:id="data2" text="data"/>
+                    </VBox>
 
                 </AnchorPane>
                 <VBox alignment="CENTER">
@@ -37,19 +45,67 @@
                     </HBox>
                 </VBox>
                 <AnchorPane fx:id="rightSide" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                    <Label fx:id="data1" textAlignment="CENTER" text="data"/>
+                    <VBox fx:id="legend" style="-fx-padding: 10px">
+                        <children >
+                            <Label fx:id="data1" text="Legend" style="-fx-font-size: 25px; -fx-font-weight: bold"/>
+                            <HBox>
+                                <ImageView>
+                                    <fitWidth>30.0</fitWidth>
+                                    <fitHeight>30.0</fitHeight>
+                                    <Image url="@/images/paw128.png"/>
+                                </ImageView>
+                                <Label text=" -  Animal" style="-fx-font-size: 20px;"/>
+                            </HBox>
+                            <HBox>
+                                <ImageView>
+                                    <fitWidth>30.0</fitWidth>
+                                    <fitHeight>30.0</fitHeight>
+                                    <Image url="@/images/grass128.png"/>
+                                </ImageView>
+                                <Label text=" -  Grass" style="-fx-font-size: 20px;"/>
+                            </HBox>
+                            <HBox>
+                                <ProgressBar progress="1" style="-fx-accent: rgb(0, 255, 0);" />
+                                <Label text=" -  Energy level" style="-fx-font-size: 20px;" alignment="CENTER"/>
+                            </HBox>
+                            <HBox fx:id="waterLegend" managed="false">
+                                <Pane style="-fx-background-color: #52aac0; " minWidth="50" minHeight="50">
+                                    <ImageView>
+                                        <fitWidth>50.0</fitWidth>
+                                        <fitHeight>50.0</fitHeight>
+                                        <Image url="@/images/water128.png"/>
+                                    </ImageView>
+                                </Pane>
+                                <Label text=" -  Water field" style="-fx-font-size: 20px;"/>
+                            </HBox>
+                            <HBox>
+                                <Pane style="-fx-background-color: #D4E7C5; " minWidth="50" minHeight="50"/>
+                                <Label text=" -  Normal field" style="-fx-font-size: 20px;"/>
+                            </HBox>
+                            <HBox>
+                                <Pane style="-fx-background-color: #99BC85; " minWidth="50" minHeight="50"/>
+                                <Label text=" -  Równik field" style="-fx-font-size: 20px;"/>
+                            </HBox>
+                            <HBox>
+                                <Pane style="-fx-background-color: #e19d5c;" minWidth="50" minHeight="50"/>
+                                <Label text=" -  Tracked animal" style="-fx-font-size: 20px;"/>
+                            </HBox>
+                            <Separator minWidth="1000"/>
+                            <Label fx:id="trackingLabel" text="Click on animal to track" style="-fx-font-size: 25px; -fx-font-weight: bold"/>
+                            <Label fx:id="stats" style="-fx-font-size: 20px"/>
+                        </children>
+                    </VBox>
                 </AnchorPane>
             </items>
         </SplitPane>
 
-<!--        </HBox>-->
     </center>
     <bottom>
         <VBox alignment="CENTER" minHeight="50.0">
             <HBox alignment="CENTER" spacing="10">
                 <Label fx:id="simulationLabel" text="simulation"/>
                 <Button text="Start Simulation" onAction="#onSimulationStartClicked" fx:id="startSimulation"/>
-                <Button text="Stop Simulation" onAction="#stopSimulation" fx:id="stopSimulation"/>
+                <Button text="Stop Simulation" onAction="#stopSimulation" fx:id="stopSimulationButton"/>
             </HBox>
         </VBox>
     </bottom>

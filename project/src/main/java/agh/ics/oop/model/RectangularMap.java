@@ -12,5 +12,9 @@ public class RectangularMap extends AbstractMap {
         return position.getY() >= 0 && position.getY() < super.height;
     }
 
+    @Override
+    public boolean isWaterMap() {
+        return false;
+    }
 }
 

@@ -169,4 +169,9 @@ public class WaterMap extends AbstractMap{
     public boolean canMoveTo(Vector2d position){
         return super.canMoveTo(position) && waters.get(position) == null;
     }
+
+    @Override
+    public boolean isWaterMap() {
+        return true;
+    }
 }

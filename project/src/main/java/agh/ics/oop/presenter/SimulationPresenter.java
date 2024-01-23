@@ -38,7 +38,8 @@ public class SimulationPresenter implements MapChangeListener {
     public Label stats;
     public Label trackingLabel;
     public VBox plotField;
-//    public LineChart<Number,Number> chart;
+    public BorderPane main;
+    //    public LineChart<Number,Number> chart;
     private IMap map;
     @FXML
     private Label simulationLabel;
@@ -56,6 +57,10 @@ public class SimulationPresenter implements MapChangeListener {
     private static final Image WATER = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/water128.png")).toExternalForm());
 
     public void setPrimaryStage(Stage primaryStage) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        main.setMinHeight((int) (screenSize.height * 0.9));
+        main.setMinWidth((int) (screenSize.width * 0.95));
+
         this.primaryStage = primaryStage;
         this.primaryStage.setOnCloseRequest(event -> {
             simulation.setState(SimulationState.FINISHED);
@@ -80,7 +85,7 @@ public class SimulationPresenter implements MapChangeListener {
         mapGrid.setAlignment(Pos.CENTER);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = (int) (screenSize.width * 0.7);
-        int height = (int) (screenSize.height * 0.85);
+        int height = (int) (screenSize.height * 0.8);
         int CELL = min(height/ worldMap.getHeight(),width/ worldMap.getWidth());
 
         Arguments args = worldMap.getArgs();

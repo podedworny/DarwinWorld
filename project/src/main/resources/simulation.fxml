@@ -18,9 +18,8 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.CategoryAxis?>
-<BorderPane xmlns="http://javafx.com/javafx"
+<BorderPane fx:id="main" xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            minHeight="1000.0" minWidth="1600.0"
             fx:controller="agh.ics.oop.presenter.SimulationPresenter">
     <top>
         <VBox alignment="CENTER">

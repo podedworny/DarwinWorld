@@ -15,9 +15,6 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.Pane?>
 
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.chart.CategoryAxis?>
 <BorderPane fx:id="main" xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="agh.ics.oop.presenter.SimulationPresenter">
@@ -35,7 +32,7 @@
                 <AnchorPane  minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <VBox fx:id="plotField">
                         <Label fx:id="info" text="General Statistics" style="-fx-font-size: 25px; -fx-font-weight: bold"/>
-                        <Label fx:id="data2" text="data" style="-fx-font-size: 20px;"/>
+                        <Label fx:id="mapStats" text="data" style="-fx-font-size: 20px;"/>
                         <Label fx:id="graph" text="Graph" style="-fx-font-size: 25px; -fx-font-weight: bold"/>
                     </VBox>
 
@@ -53,7 +50,7 @@
                                 <ImageView>
                                     <fitWidth>30.0</fitWidth>
                                     <fitHeight>30.0</fitHeight>
-                                    <Image url="@/images/paw128.png"/>
+                                    <Image url="@/images/paw.png"/>
                                 </ImageView>
                                 <Label text=" -  Animal" style="-fx-font-size: 20px;"/>
                             </HBox>
@@ -61,7 +58,7 @@
                                 <ImageView>
                                     <fitWidth>30.0</fitWidth>
                                     <fitHeight>30.0</fitHeight>
-                                    <Image url="@/images/grass128.png"/>
+                                    <Image url="@/images/grass.png"/>
                                 </ImageView>
                                 <Label text=" -  Grass" style="-fx-font-size: 20px;"/>
                             </HBox>
@@ -74,7 +71,7 @@
                                     <ImageView>
                                         <fitWidth>50.0</fitWidth>
                                         <fitHeight>50.0</fitHeight>
-                                        <Image url="@/images/water128.png"/>
+                                        <Image url="@/images/water.png"/>
                                     </ImageView>
                                 </Pane>
                                 <Label text=" -  Water field" style="-fx-font-size: 20px;"/>
@@ -85,7 +82,7 @@
                             </HBox>
                             <HBox>
                                 <Pane style="-fx-background-color: #99BC85; " minWidth="50" minHeight="50"/>
-                                <Label text=" -  Równik field" style="-fx-font-size: 20px;"/>
+                                <Label text=" -  Equator field" style="-fx-font-size: 20px;"/>
                             </HBox>
                             <HBox>
                                 <Pane style="-fx-background-color: #e19d5c;" minWidth="50" minHeight="50"/>
@@ -99,7 +96,6 @@
                 </AnchorPane>
             </items>
         </SplitPane>
-
     </center>
     <bottom>
         <VBox alignment="CENTER" minHeight="50.0">

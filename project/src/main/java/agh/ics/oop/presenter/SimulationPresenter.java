@@ -1,10 +1,15 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.model.*;
-import agh.ics.oop.model.SimulationState;
+import agh.ics.oop.model.element.Animal;
+import agh.ics.oop.model.map.IMap;
+import agh.ics.oop.model.simulation.SimulationState;
+import agh.ics.oop.model.simulation.Arguments;
+import agh.ics.oop.model.simulation.Simulation;
+import agh.ics.oop.model.util.ImageBox;
+import agh.ics.oop.model.util.MapChangeListener;
+import agh.ics.oop.model.util.Vector2d;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.chart.LineChart;
@@ -21,17 +26,15 @@ import java.awt.*;
 import javafx.scene.input.MouseEvent;
 import java.util.Arrays;
 import java.util.Objects;
-
 import static java.lang.Math.*;
 
 public class SimulationPresenter implements MapChangeListener {
 
     public GridPane mapGrid;
     public Label dayLabel;
-    public Label numberOfAnimals;
     public SplitPane mainSplitPane;
     public Label data1;
-    public Label data2;
+    public Label mapStats;
     public AnchorPane rightSide;
     public VBox legend;
     public HBox waterLegend;
@@ -42,22 +45,17 @@ public class SimulationPresenter implements MapChangeListener {
     public Label info;
     public Label graph;
     public Label simulationID;
-    //    public LineChart<Number,Number> chart;
-    private IMap map;
-    @FXML
-    private Label simulationLabel;
-    @FXML
     public Button startSimulation;
     public Button stopSimulationButton;
-    private Arguments args;
     private LineChart<Number,Number> chart;
+    private IMap map;
     private Simulation simulation;
     private Stage primaryStage;
     private boolean firstClick=true;
     private Animal trackedAnimal = null;
-    private static final Image GRASS = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/grass128.png")).toExternalForm());
-    private static final Image ANIMAL = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/paw128.png")).toExternalForm());
-    private static final Image WATER = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/water128.png")).toExternalForm());
+    private static final Image GRASS = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/grass.png")).toExternalForm());
+    private static final Image ANIMAL = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/paw.png")).toExternalForm());
+    private static final Image WATER = new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/water.png")).toExternalForm());
 
     public void setPrimaryStage(Stage primaryStage) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -68,6 +66,8 @@ public class SimulationPresenter implements MapChangeListener {
         this.primaryStage.setOnCloseRequest(event -> {
             simulation.setState(SimulationState.FINISHED);
         });
+        startSimulation.setCursor(Cursor.HAND);
+        stopSimulationButton.setCursor(Cursor.HAND);
     }
 
     public void setWorldMap(IMap map){
@@ -80,16 +80,15 @@ public class SimulationPresenter implements MapChangeListener {
             waterLegend.setVisible(false);
             waterLegend.setManaged(false);
         }
-        startSimulation.setCursor(Cursor.HAND);
-        stopSimulationButton.setCursor(Cursor.HAND);
-        plot(map);
+        plot();
     }
 
-    public void drawMap(IMap worldMap) {
+    public void drawMap(IMap worldMap){
         mapGrid.setAlignment(Pos.CENTER);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
         int width = (int) (screenSize.width * 0.7);
-        int height = (int) (screenSize.height * 0.8);
+        int height = (int) (screenSize.height * 0.85);
         int CELL = min(height/ worldMap.getHeight(),width/ worldMap.getWidth());
 
         Arguments args = worldMap.getArgs();
@@ -120,7 +119,6 @@ public class SimulationPresenter implements MapChangeListener {
                 if(j>=map.getHeight()*2/5 && j<map.getHeight()*3/5){
                     pane.setStyle("-fx-background-color: #99BC85; -fx-border-color: black; -fx-border-width: 0.5px;");
                 }
-
                 if (worldMap.objectAt(new Vector2d(i, j)) != null) {
                     String path = worldMap.objectAt(new Vector2d(i, j)).toString();
                     ImageBox imageBox = null;
@@ -131,11 +129,12 @@ public class SimulationPresenter implements MapChangeListener {
                                 pane.setStyle("-fx-background-color: #e19d5c; -fx-border-color: black; -fx-border-width: 0.5px;");
                             }
                             imageBox = new ImageBox(ANIMAL,animal.getEnergy(),worldMap.getArgs().animalEnergy());
-                            imageBox.setRotation(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI()); // !!!! NULL POINTER EXEPTION
+                            imageBox.setRotation(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI());
                             imageBox.setFit(CELL * 0.7);
                             setOnAnimalClicked(imageBox, animal);
-                            imageBox.setCursor(Cursor.HAND);
-
+                            if(simulation.getState()==SimulationState.STOPED || map.getDay()==1){
+                                imageBox.setCursor(Cursor.HAND);
+                            }
                         }
                     }
                     else if (path.equals("water")){
@@ -154,25 +153,26 @@ public class SimulationPresenter implements MapChangeListener {
                 } else{
                     mapGrid.add(pane,adjustedI, adjustedJ);
                 }
-
             }
         }
+
         dayLabel.setText("Day " + worldMap.getDay());
-        data2.setText("Number of animals: "+ worldMap.numberOfAnimals()+"\nMost popular genom: "
+        mapStats.setText("Number of animals: "+ worldMap.numberOfAnimals()+"\nMost popular genom: "
                 + Arrays.toString(worldMap.getMostPopularGenom())
                 + "\nNumber of grass fields: "+ worldMap.getGrassFields()
                 + "\nAverage energy level: "
                 + worldMap.averageEnergyLevel()+"\nAverage child count: "
                 + worldMap.averageChildrenCount()+"\nAverage dead animal age: "
-                + worldMap.averageAge()+"\nNumber of animals ever lived: "+worldMap.everAnimalCount());
+                + worldMap.averageAge()+"\nNumber of animals ever lived: " + worldMap.everAnimalCount());
+
         plotChange();
         if (trackedAnimal!=null) {
             trackingStats(trackedAnimal);
             if(trackedAnimal.getEnergy()<=0)
                 stats.setText(stats.getText() + "\nDeath Day: " + trackedAnimal.getDeathDate());
         }
-
     }
+
     private void plotChange(){
         NumberAxis xAxis = (NumberAxis) chart.getXAxis();
         NumberAxis yAxis = (NumberAxis) chart.getYAxis();
@@ -182,7 +182,7 @@ public class SimulationPresenter implements MapChangeListener {
         yAxis.setUpperBound(max((int)yAxis.getUpperBound(),map.averageAge()));
         yAxis.setUpperBound(max((int)yAxis.getUpperBound(),map.averageEnergyLevel()));
         yAxis.setUpperBound(max((int)yAxis.getUpperBound(),map.averageChildrenCount()));
-
+        yAxis.setUpperBound(min((int)yAxis.getUpperBound(),1000));
         if(map.getDay()>30) {
             xAxis.setLowerBound(map.getDay()-30);
             xAxis.setUpperBound(map.getDay());
@@ -201,8 +201,7 @@ public class SimulationPresenter implements MapChangeListener {
         series4.getData().add(new XYChart.Data<>(map.getDay(), map.averageChildrenCount()));
     }
 
-
-    private void plot(IMap worldmap){
+    private void plot(){
         NumberAxis xAxis = new NumberAxis(0,30,1);
         NumberAxis yAxis = new NumberAxis(0,max(map.numberOfAnimals()*2,map.getGrassFields()*2), 1);
 
@@ -243,10 +242,21 @@ public class SimulationPresenter implements MapChangeListener {
 
     @Override
     public void mapChanged(IMap worldMap) {
+//        if(map.getDay()==1){
         Platform.runLater(() -> {
-            clearGrid();
-            drawMap(worldMap);
-        });
+                    clearGrid();
+                    drawMap(worldMap);
+                });
+//        }
+//        else {
+//            simulation.getMapLock().lock();
+//            try {
+//                clearGrid();
+//                drawMap(worldMap);
+//            } finally {
+//                simulation.getMapLock().unlock();
+//            }
+//        }
     }
 
     public void onSimulationStartClicked() {
@@ -265,6 +275,7 @@ public class SimulationPresenter implements MapChangeListener {
         startSimulation.setDisable(false);
         stopSimulationButton.setDisable(true);
         simulation.stopSimulation();
+
     }
 
     private void clearGrid() {
@@ -285,10 +296,12 @@ public class SimulationPresenter implements MapChangeListener {
         imageBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                trackingLabel.setText("Tracked animal statistics: ");
-                setTrackedAnimal(animal);
-                trackingStats(animal);
-                mapChanged(map);
+                if(simulation.getState()==SimulationState.STOPED || map.getDay()==1) {
+                    trackingLabel.setText("Tracked animal statistics: ");
+                    setTrackedAnimal(animal);
+                    trackingStats(animal);
+                    mapChanged(map);
+                }
             }
         });
     }

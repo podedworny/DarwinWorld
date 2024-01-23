@@ -1,11 +1,11 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.SimulationApp;
-import agh.ics.oop.model.Arguments;
-import agh.ics.oop.model.RectangularMap;
-import agh.ics.oop.model.IMap;
-import agh.ics.oop.model.Simulation;
-import agh.ics.oop.model.WaterMap;
+import agh.ics.oop.model.simulation.Arguments;
+import agh.ics.oop.model.map.RectangularMap;
+import agh.ics.oop.model.map.IMap;
+import agh.ics.oop.model.simulation.Simulation;
+import agh.ics.oop.model.map.WaterMap;
 import com.google.gson.Gson;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -59,9 +59,6 @@ public class MenuPresenter implements Initializable {
     public Button editSet;
     public Button saveSet;
     public Button deleteButton;
-
-    @FXML
-    private javafx.scene.control.Label waterMapLabel;
     @FXML
     private TextField waterMapTextField;
 
@@ -74,28 +71,23 @@ public class MenuPresenter implements Initializable {
         BorderPane viewRoot = loader.load();
 
         SimulationPresenter presenter = loader.getController();
-
         presenter.setPrimaryStage(primaryStage);
-
 
         IMap map;
         if ("Normal map".equals(args.mapType()))
             map = new RectangularMap(args, presenter);
         else
             map = new WaterMap(args, presenter);
+
         presenter.setWorldMap(map);
-
         configureStage(primaryStage, viewRoot);
-
         Simulation simulation = new Simulation(args.coolDown(), args.grassEachDay(), map);
         presenter.setSimulation(simulation);
-
         primaryStage.show();
     }
 
     private Arguments gatherArguments() {
         String mapa = mapType.getValue();
-
         int waterNumber = 0;
         int waterPercentage = 0;
         int waterDays = 0;
@@ -105,6 +97,7 @@ public class MenuPresenter implements Initializable {
             waterPercentage = Integer.parseInt(waterMapPercentageTextField.getText());
             waterDays = Integer.parseInt(waterMapDaysTextField.getText());
         }
+
         int mapW = Integer.parseInt(mapWidth.getText());
         int mapH = Integer.parseInt(mapHeight.getText());
         int grassE = Integer.parseInt(grassEnergy.getText());
@@ -132,12 +125,11 @@ public class MenuPresenter implements Initializable {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simulation");
         primaryStage.setMaximized(true);
-        primaryStage.getIcons().add(new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/paw128.png")).toExternalForm()));
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/paw.png")).toExternalForm()));
         primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
         primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
     }
 
-    // to co ponizej to 90% chatgpt, ale dziala
     public void initialize(URL location, ResourceBundle resources) {
         mapType.setItems(FXCollections.observableArrayList("Normal map", "Water map"));
         presetName.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -178,9 +170,7 @@ public class MenuPresenter implements Initializable {
         maxMut.setTextFormatter(createIntegerTextFormatter(5, 1000));
         genomLen.setTextFormatter(createIntegerTextFormatter(5, 1000));
         initializePresetComboBox();
-//        public Button editSet;
-//        public Button saveSet;
-//        public Button deleteButton;
+
         editSet.setCursor(Cursor.HAND);
         saveSet.setCursor(Cursor.HAND);
         deleteButton.setCursor(Cursor.HAND);
@@ -258,7 +248,6 @@ public class MenuPresenter implements Initializable {
             }
         }
     }
-
 
     public void editPreset(ActionEvent actionEvent) {
         String selectedPreset = preset.getValue();

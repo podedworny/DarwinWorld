@@ -1,12 +1,12 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.util;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Genom {
-    private final MapDirection[] moves; // <- tablica z naszymi genami (kolejnymi ruchami)
-    private int index; // <- index gdzie aktualnie znajdujemy się w tablicy
+    private final MapDirection[] moves;
+    private int index;
     private int minMutation;
     private int maxMutation;
     public Genom(int len, int minMutation, int maxMutation) {
@@ -30,8 +30,6 @@ public class Genom {
     }
 
     private void mutation(){
-        // wybieramy liczbe mutacji -> tworzymy liste indexow i mieszamy ja -> bierzemy tylko n liczbe mutacji
-        // dany index zmieniamy / narazie jest szansa ze moze byc ten sam ruch po mutacji ale to mozna zmienic
         Random random = new Random();
         int mutationCount = random.nextInt(maxMutation - minMutation + 1) + minMutation;
         List<Integer> indexes = IntStream.range(0,moves.length).boxed().collect(Collectors.toList());
@@ -43,7 +41,7 @@ public class Genom {
         }
     }
 
-    public void nextIndexVariant(){  //wariant 3
+    public void nextIndexVariant(){
         Random random = new Random();
         if(random.nextInt(10)<8)
             nextIndexDefault();
@@ -52,7 +50,6 @@ public class Genom {
             do {
                 newIndex = random.nextInt(moves.length);
             } while (newIndex == index);
-
             index = newIndex;
         }
     }

@@ -1,4 +1,4 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.simulation;
 
 public record Arguments(String mapType, int mapWidth, int mapHeight,
                         int grassEnergy, int copulationEnergy,int animalEnergy,

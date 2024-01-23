@@ -1,17 +1,16 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.map;
+
+import agh.ics.oop.model.element.Water;
+import agh.ics.oop.model.element.WorldElement;
+import agh.ics.oop.model.simulation.Arguments;
+import agh.ics.oop.model.util.MapDirection;
+import agh.ics.oop.model.util.Vector2d;
+import agh.ics.oop.model.util.MapChangeListener;
 
 import java.util.*;
 
-public class WaterMap extends AbstractMap{
-//    ile wody na mapie
-//    albo jeden akwen
-//    albo wiele
-//    nie wlazi na wode
-//    moze umrzec z glodu ale nie utopic sie
-//    parametr co ile zwieksza sie llub zmniejsza woda, np tydzine po tygodniu zmiejszami ilosc wody o 50%
-//    rozszerza - > mozna wylosowac wode gdzie zwierze tam gdzie zwierze nie moze byc woda
-//    woda moze wedrowac
-    private final Map<Vector2d,Water> waters = new HashMap<>();
+public class WaterMap extends AbstractMap {
+    private final Map<Vector2d, Water> waters = new HashMap<>();
     private final List<Water> waterList = new ArrayList<>();
     private final int waterStartCount;
     private final int waterDay;
@@ -25,7 +24,6 @@ public class WaterMap extends AbstractMap{
         this.waterDay = args.waterDays();
         this.waterExtendedCount = waterStartCount + (waterStartCount * args.waterPercentage() / 100);
         generateStartWater();
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAA"+waters.size());
     }
 
     private void generateStartWater(){
@@ -48,7 +46,7 @@ public class WaterMap extends AbstractMap{
         for (int i = 0; i< waterStartCount -1 && waterCurrent + super.animalList.size() < super.fields; i++){
             direction = MapDirection.values()[random.nextInt(4) * 2];
             for (int j = 0; j < 4; j++){
-                if (mainWater.neighbours.get(direction) == null) {
+                if (mainWater.getNeighbours().get(direction) == null) {
                     position = super.getNewPosition(mainWater.getPosition(), direction);
                     if (animals.get(position) == null && canMoveTo(position)){
                         if (grasses.get(position) != null) removeGrass(position);
@@ -63,10 +61,9 @@ public class WaterMap extends AbstractMap{
                 }
                 direction = direction.next().next();
             }
-
             int index;
             do index = random.nextInt(waterCurrent);
-            while (waterList.get(index).neighbours.size() == 4 || (waterList.get(index).neighbours.size() == 3 &&
+            while (waterList.get(index).getNeighbours().size() == 4 || (waterList.get(index).getNeighbours().size() == 3 &&
                     (waterList.get(index).getPosition().getY()==0||waterList.get(index).getPosition().getY()==super.height-1)));
             mainWater = waterList.get(index);
         }
@@ -90,7 +87,7 @@ public class WaterMap extends AbstractMap{
         int index;
         Water mainWater;
         do index = random.nextInt(waterCurrent);
-        while (waterList.get(index).neighbours.size() == 4 || (waterList.get(index).neighbours.size() == 3 &&
+        while (waterList.get(index).getNeighbours().size() == 4 || (waterList.get(index).getNeighbours().size() == 3 &&
                 (waterList.get(index).getPosition().getY()==0||waterList.get(index).getPosition().getY()==super.height-1)));
         mainWater = waterList.get(index);
         MapDirection direction;
@@ -98,7 +95,7 @@ public class WaterMap extends AbstractMap{
         for (int i = 0; i<waterExtendedCount && waterCurrent + super.animalList.size() < super.fields; i++){
             direction = MapDirection.values()[random.nextInt(4) * 2];
             for (int j = 0; j < 4; j++){
-                if (mainWater.neighbours.get(direction) == null) {
+                if (mainWater.getNeighbours().get(direction) == null) {
                     position = super.getNewPosition(mainWater.getPosition(), direction);
                     if (animals.get(position) == null && canMoveTo(position)){
                         if (grasses.get(position) != null) removeGrass(position);
@@ -115,7 +112,7 @@ public class WaterMap extends AbstractMap{
                 direction = direction.next().next();
             }
             do index = random.nextInt(waterCurrent);
-            while (waterList.get(index).neighbours.size() == 4 || (waterList.get(index).neighbours.size() == 3 &&
+            while (waterList.get(index).getNeighbours().size() == 4 || (waterList.get(index).getNeighbours().size() == 3 &&
                     (waterList.get(index).getPosition().getY()==0||waterList.get(index).getPosition().getY()==super.height-1)));
             mainWater = waterList.get(index);
         }
@@ -140,9 +137,9 @@ public class WaterMap extends AbstractMap{
             MapDirection direction = MapDirection.values()[i];
             Vector2d newPosition = super.getNewPosition(water.getPosition(),direction);
             if (newPosition == water.getPosition()) continue;
-            if (waters.get(newPosition) != null && water.neighbours.get(direction) == null)
+            if (waters.get(newPosition) != null && water.getNeighbours().get(direction) == null)
                 water.addNeighbour(direction,waters.get(newPosition));
-            if (waters.get(newPosition) != null && waters.get(newPosition).neighbours.get(direction.opposite())==null)
+            if (waters.get(newPosition) != null && waters.get(newPosition).getNeighbours().get(direction.opposite())==null)
                 waters.get(newPosition).addNeighbour(direction.opposite(),water);
         }
     }
@@ -152,9 +149,9 @@ public class WaterMap extends AbstractMap{
             MapDirection direction = MapDirection.values()[i];
             Vector2d newPosition = super.getNewPosition(water.getPosition(),direction);
             if (newPosition == water.getPosition()) continue;
-            if (waters.get(newPosition) != null && water.neighbours.get(direction) != null)
+            if (waters.get(newPosition) != null && water.getNeighbours().get(direction) != null)
                 water.removeNeighbour(direction);
-            if (waters.get(newPosition) != null && waters.get(newPosition).neighbours.get(direction.opposite()) != null)
+            if (waters.get(newPosition) != null && waters.get(newPosition).getNeighbours().get(direction.opposite()) != null)
                 waters.get(newPosition).removeNeighbour(direction.opposite());
         }
     }

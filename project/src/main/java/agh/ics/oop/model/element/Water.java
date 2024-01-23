@@ -1,14 +1,21 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.element;
+
+import agh.ics.oop.model.util.MapDirection;
+import agh.ics.oop.model.util.Vector2d;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Water implements WorldElement{
+public class Water implements WorldElement {
     Vector2d position;
     Map<MapDirection, Water> neighbours = new HashMap<>();
-    Water(Vector2d position){
+    public Water(Vector2d position){
         this.position = position;
+    }
+
+    public Map<MapDirection, Water> getNeighbours() {
+        return neighbours;
     }
 
     public void addNeighbour(MapDirection direction, Water neighbour){

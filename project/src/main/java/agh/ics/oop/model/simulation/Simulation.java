@@ -1,5 +1,6 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.simulation;
 
+import agh.ics.oop.model.map.IMap;
 import com.opencsv.CSVWriter;
 
 import java.io.File;
@@ -9,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Simulation implements Runnable{
     private final IMap map;
@@ -18,9 +21,7 @@ public class Simulation implements Runnable{
     private final String fileName;
     private FileWriter writer;
     private CSVWriter csvWriter;
-
     private SimulationState state = SimulationState.STARTED;
-
 
     public Simulation(int coolDown, int grassEachDay, IMap map) {
         this.map = map;
@@ -52,36 +53,51 @@ public class Simulation implements Runnable{
             this.state = state;
     }
 
+    public SimulationState getState() {
+        return state;
+    }
+
     public void stopSimulation() {
         state = SimulationState.STOPED;
     }
+
+//    private final Lock mapLock = new ReentrantLock();
+//
+//    public Lock getMapLock() {
+//        return mapLock;
+//    }
 
     public void run(){
         while (true) {
             switch (state) {
                 case STARTED -> {
-                    try {
-                        String[] data = {
-                                String.valueOf(map.getDay()),
-                                String.valueOf(map.numberOfAnimals()),
-                                String.valueOf(map.getGrassFields()),
-                                Arrays.toString(map.getMostPopularGenom()),
-                                String.valueOf(map.averageEnergyLevel()),
-                                String.valueOf(map.averageChildrenCount()),
-                                String.valueOf(map.averageAge()),
-                                String.valueOf(map.everAnimalCount())
-                        };
-                        csvWriter.writeNext(data);
-                        csvWriter.flush();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    map.deleteDeadAnimals();
-                    map.moveAnimals();
-                    map.eatGrass();
-                    map.reproduce();
-                    map.placeNewGrass(grassEachDay);
-                    map.animalsNextDate();
+
+//                    try {
+                        try {
+                            String[] data = {
+                                    String.valueOf(map.getDay()),
+                                    String.valueOf(map.numberOfAnimals()),
+                                    String.valueOf(map.getGrassFields()),
+                                    Arrays.toString(map.getMostPopularGenom()),
+                                    String.valueOf(map.averageEnergyLevel()),
+                                    String.valueOf(map.averageChildrenCount()),
+                                    String.valueOf(map.averageAge()),
+                                    String.valueOf(map.everAnimalCount())
+                            };
+                            csvWriter.writeNext(data);
+                            csvWriter.flush();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        map.deleteDeadAnimals();
+                        map.moveAnimals();
+                        map.eatGrass();
+                        map.reproduce();
+                        map.placeNewGrass(grassEachDay);
+                        map.animalsNextDate();
+//                    } finally {
+//                        mapLock.unlock();
+//                    }
                     try {
                         Thread.sleep(coolDown);
                     }
@@ -95,7 +111,6 @@ public class Simulation implements Runnable{
                     return;
                 }
             }
-
         }
     }
 

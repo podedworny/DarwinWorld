@@ -15,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
@@ -130,6 +131,8 @@ public class MenuPresenter implements Initializable {
         var scene = new Scene(viewRoot);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simulation");
+        primaryStage.setMaximized(true);
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/paw128.png")).toExternalForm()));
         primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
         primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
     }

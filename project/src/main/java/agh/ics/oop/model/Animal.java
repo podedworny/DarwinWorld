@@ -4,7 +4,6 @@ import java.util.*;
 
 public class Animal implements WorldElement{
     private final int myId;
-    static int id;
     private Vector2d position; // pozycja
     private MapDirection orientation; // orientacja
     private final Genom genom; //nasz genom
@@ -12,12 +11,11 @@ public class Animal implements WorldElement{
     private int age; //wiek
     private int childrenCount = 0; // liczba dzieci
     private int deathDate; // dzien smierci
-    private int descendantCount; // liczba potomkow
     private int grassEaten; // liczba zjedzonej trawy
     protected final List<Animal> kids = new LinkedList<>(); // lista dzieci
 
 
-    public Animal(Vector2d pos, int energy, Genom genom){
+    public Animal(Vector2d pos, int energy, Genom genom, int ID){
         MapDirection[] directions = MapDirection.values();
         Random random = new Random();
         this.orientation = directions[random.nextInt(directions.length)];  // losowanie orientacji (oby nie gej)
@@ -26,10 +24,10 @@ public class Animal implements WorldElement{
         this.genom = genom;
         age = 0;
         childrenCount = 0;
-        myId = id++;
+        myId = ID;
     }
 
-    public Animal(int width, int height, int energy, int genomLen, int minMutation, int maxMutation){ // konstruktor tylko do stworzenia animali na poczatku
+    public Animal(int width, int height, int energy, int genomLen, int minMutation, int maxMutation, int ID){ // konstruktor tylko do stworzenia animali na poczatku
         MapDirection[] directions = MapDirection.values();
         Random random = new Random();
         this.orientation = directions[random.nextInt(directions.length)];  // losowanie orientacji (oby nie gej)
@@ -38,7 +36,7 @@ public class Animal implements WorldElement{
         this.genom = new Genom(genomLen, minMutation, maxMutation);
         age = 0;
         childrenCount = 0;
-        myId = id++;
+        myId = ID;
     }
 
     public void move(IMap map){ //tutaj w labach jest movevalidator ktory wlasnie implementuje worldmap, mozna to potem ew dodac
@@ -72,9 +70,6 @@ public class Animal implements WorldElement{
 
     public void decreaseEnergy(int energyLevel){
         energy -= energyLevel;
-    }
-    public void newKid(){
-        childrenCount++;
     }
 
     public void nextDay(){
@@ -123,32 +118,32 @@ public class Animal implements WorldElement{
         return deathDate;
     }
 
-    public int getDescendantCount(){
-        return descendantCount;
-    }
-
     public int getGrassEaten(){
         return grassEaten;
     }
 
     public void addKid(Animal animal){
         kids.add(animal);
+        childrenCount++;
     }
     @Override
     public String toString() {
         return "paw";
     }
     public int descendantCalculate(){
-        if (kids.isEmpty())
-            return 0;
-        int result = childrenCount;
-        for (Animal kid : kids){
-            result += kid.descendantCalculate();
-        }
-        descendantCount = result;
-        return result;
-    }
+        Queue<Animal> animalList = new LinkedList<>(kids);
+        Set<Animal> animalSet = new HashSet<>();
 
+        while(!animalList.isEmpty()){
+            Animal currentAnimal = animalList.poll();
+            if(!animalSet.contains(currentAnimal)){
+                animalSet.add(currentAnimal);
+                animalList.addAll(currentAnimal.kids);
+            }
+        }
+
+        return animalSet.size();
+    }
 
     @Override
     public boolean equals(Object o) {

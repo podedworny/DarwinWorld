@@ -7,9 +7,12 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
+import java.util.Objects;
 
 
 public class SimulationApp extends Application {
@@ -26,6 +29,7 @@ public class SimulationApp extends Application {
         var scene = new Scene(viewRoot);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Menu");
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(SimulationPresenter.class.getResource("/images/paw128.png")).toExternalForm()));
         primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
         primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
     }

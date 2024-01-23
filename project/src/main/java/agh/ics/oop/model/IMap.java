@@ -17,8 +17,6 @@ public interface IMap {
 
     void placeNewGrass(int grassEachDay);
 
-    void descendantCounting();
-
     void animalsNextDate();
 
     int numberOfAnimals();
@@ -50,4 +48,6 @@ public interface IMap {
     Vector2d getNewPosition(Vector2d position, MapDirection direction);
     Animal getAnimal(Vector2d position);
     boolean isWaterMap();
+    int everAnimalCount();
+    int getID();
 }

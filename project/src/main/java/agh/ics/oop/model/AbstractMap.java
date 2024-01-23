@@ -11,7 +11,6 @@ public abstract class AbstractMap implements IMap{
     protected final Map<Vector2d, List<Animal>> animals = new HashMap<>();
     protected final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final Map<MapDirection[], Integer> genomDictionary = new HashMap<>();
-    private final Animal fatherOfFathers = new Animal(new Vector2d(0,0),0,new Genom(1, 1,1));
     protected final Arguments args;
     protected final int width;
     protected final int height;
@@ -26,6 +25,8 @@ public abstract class AbstractMap implements IMap{
     private int equatorGrassFields = 0;
     private int worseFieldsGrass = 0;
     private int worseFields = 0;
+    private final int myID;
+    static int id=1;
 
     public AbstractMap(Arguments args, MapChangeListener observer){
         this.args = args;
@@ -36,6 +37,7 @@ public abstract class AbstractMap implements IMap{
         this.equatorHeight =  this.height / 5 + this.height % 2;
         this.equatorFields = this.width * equatorHeight;
         this.worseFields = this.fields - this.equatorFields;
+        myID = id++;
         addObserver(observer);
 
         placeStartAnimals(args);
@@ -62,7 +64,7 @@ public abstract class AbstractMap implements IMap{
 
     private void placeStartAnimals(Arguments args) {
         for (int i = 0; i< args.animalInitNumber(); i++){
-            Animal animal = new Animal(width,height, args.animalEnergy(), args.genomLenght(), args.minMut(), args.maxMut());
+            Animal animal = new Animal(width,height, args.animalEnergy(), args.genomLenght(), args.minMut(), args.maxMut(),allAnimalList.size()+1);
             animalList.add(animal);
             allAnimalList.add(animal);
             placeAnimal(animal);
@@ -158,17 +160,15 @@ public abstract class AbstractMap implements IMap{
 
     public Animal animalCopulation(Animal mother, Animal father){ // ================
         MapDirection[] moves = childMoves(mother,father);
-        Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves));
+        Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves), allAnimalList.size()+1);
         mother.decreaseEnergy(args.energyTaken());
         father.decreaseEnergy(args.energyTaken());
-        mother.newKid();
         mother.addKid(child);
-        father.newKid();
         father.addKid(child);
         return child;
     }
 
-    public void deleteDeadAnimals(){ // ================
+    public void deleteDeadAnimals(){
         Iterator<Animal> iterator = animalList.iterator();
         while (iterator.hasNext()) {
             Animal animal = iterator.next();
@@ -263,10 +263,6 @@ public abstract class AbstractMap implements IMap{
             animal.nextDay();
     }
 
-    public void descendantCounting() {
-        fatherOfFathers.descendantCalculate();
-    }
-
     public Vector2d getNewPosition(Vector2d position, MapDirection direction){
         Vector2d newPosition = position.add(direction.toUnitVector());
         if (newPosition.getY() == -1) return position;
@@ -334,5 +330,11 @@ public abstract class AbstractMap implements IMap{
     }
     public Animal getAnimal(Vector2d position){
         return animals.get(position).get(0);
+    }
+    public int everAnimalCount(){
+        return allAnimalList.size();
+    }
+    public int getID(){
+        return myID;
     }
 }

@@ -11,7 +11,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            minHeight="700.0" minWidth="450.0"
+            minHeight="800.0" minWidth="450.0"
             fx:controller="agh.ics.oop.presenter.MenuPresenter">
     <center>
         <VBox alignment="CENTER" spacing="10">

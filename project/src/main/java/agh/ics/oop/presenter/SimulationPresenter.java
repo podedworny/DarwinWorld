@@ -39,6 +39,9 @@ public class SimulationPresenter implements MapChangeListener {
     public Label trackingLabel;
     public VBox plotField;
     public BorderPane main;
+    public Label info;
+    public Label graph;
+    public Label simulationID;
     //    public LineChart<Number,Number> chart;
     private IMap map;
     @FXML
@@ -69,6 +72,7 @@ public class SimulationPresenter implements MapChangeListener {
 
     public void setWorldMap(IMap map){
         this.map = map;
+        simulationID.setText("Simulation " + map.getID());
         if (map.isWaterMap()) {
             waterLegend.setVisible(true);
             waterLegend.setManaged(true);
@@ -154,21 +158,18 @@ public class SimulationPresenter implements MapChangeListener {
             }
         }
         dayLabel.setText("Day " + worldMap.getDay());
-        numberOfAnimals.setText("Number of animals " + worldMap.numberOfAnimals());
-        data2.setText("Most populat genom: "
+        data2.setText("Number of animals: "+ worldMap.numberOfAnimals()+"\nMost popular genom: "
                 + Arrays.toString(worldMap.getMostPopularGenom())
-                + "\nGrassFields: "+ worldMap.getGrassFields()
-                + "\nAverage Energy Level: "
+                + "\nNumber of grass fields: "+ worldMap.getGrassFields()
+                + "\nAverage energy level: "
                 + worldMap.averageEnergyLevel()+"\nAverage child count: "
-                + worldMap.averageChildrenCount()+"\nAverage Dead Animal Age: "
-                + worldMap.averageAge());
+                + worldMap.averageChildrenCount()+"\nAverage dead animal age: "
+                + worldMap.averageAge()+"\nNumber of animals ever lived: "+worldMap.everAnimalCount());
         plotChange();
         if (trackedAnimal!=null) {
             trackingStats(trackedAnimal);
-            if(trackedAnimal.getEnergy()<=0){
-                stats.setText(stats.getText() + "\nDeath Day: " + worldMap.getDay());
-                trackedAnimal=null;
-            }
+            if(trackedAnimal.getEnergy()<=0)
+                stats.setText(stats.getText() + "\nDeath Day: " + trackedAnimal.getDeathDate());
         }
 
     }
@@ -249,6 +250,8 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
     public void onSimulationStartClicked() {
+        startSimulation.setDisable(true);
+        stopSimulationButton.setDisable(false);
         if (firstClick) {
             Thread thread = new Thread((simulation));
             thread.start();
@@ -259,6 +262,8 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
     public void stopSimulation(){
+        startSimulation.setDisable(false);
+        stopSimulationButton.setDisable(true);
         simulation.stopSimulation();
     }
 
@@ -296,7 +301,7 @@ public class SimulationPresenter implements MapChangeListener {
                 + "\nCurrent index: " + animal.getIndex()
                 + "\nEnergy level: " + animal.getEnergy()
                 + "\nKids count: " + animal.getChildrenCount()
-                + "\nDescendantCount: " + animal.getDescendantCount()
+                + "\nDescendantCount: " + animal.descendantCalculate()
                 + "\nAge: " + animal.getAge()
         );
     }

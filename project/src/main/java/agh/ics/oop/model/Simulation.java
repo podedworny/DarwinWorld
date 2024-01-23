@@ -1,11 +1,23 @@
 package agh.ics.oop.model;
 
+import com.opencsv.CSVWriter;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class Simulation implements Runnable{
     private final IMap map;
     private final int coolDown;
     private final int grassEachDay;
+    private final String simulationName;
+    private final String fileName;
+    private FileWriter writer;
+    private CSVWriter csvWriter;
 
     private SimulationState state = SimulationState.STARTED;
 
@@ -14,6 +26,25 @@ public class Simulation implements Runnable{
         this.map = map;
         this.coolDown = coolDown;
         this.grassEachDay = grassEachDay;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
+        this.simulationName = dateFormat.format(new Date());
+        this.fileName = "simulationRaports/simulationreport-" + simulationName + ".csv";
+
+        try {
+            File directory = new File("simulationRaports/");
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            writer = new FileWriter(fileName);
+            csvWriter = new CSVWriter(writer);
+
+            String[] header = {"Day", "Number of animals", "Number of grass fields", "Most popular genom", "Average energy level", "Average child count","Average dead animal age", "Number of animals ever lived"};
+            csvWriter.writeNext(header);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setState(SimulationState state) {
@@ -29,12 +60,27 @@ public class Simulation implements Runnable{
         while (true) {
             switch (state) {
                 case STARTED -> {
+                    try {
+                        String[] data = {
+                                String.valueOf(map.getDay()),
+                                String.valueOf(map.numberOfAnimals()),
+                                String.valueOf(map.getGrassFields()),
+                                Arrays.toString(map.getMostPopularGenom()),
+                                String.valueOf(map.averageEnergyLevel()),
+                                String.valueOf(map.averageChildrenCount()),
+                                String.valueOf(map.averageAge()),
+                                String.valueOf(map.everAnimalCount())
+                        };
+                        csvWriter.writeNext(data);
+                        csvWriter.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     map.deleteDeadAnimals();
                     map.moveAnimals();
                     map.eatGrass();
                     map.reproduce();
                     map.placeNewGrass(grassEachDay);
-                    map.descendantCounting();
                     map.animalsNextDate();
                     try {
                         Thread.sleep(coolDown);
@@ -45,10 +91,19 @@ public class Simulation implements Runnable{
                 }
                 case STOPED -> sleep(100);
                 case FINISHED -> {
+                    closeCsvWriter();
                     return;
                 }
             }
 
+        }
+    }
+
+    public void closeCsvWriter() {
+        try {
+            csvWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

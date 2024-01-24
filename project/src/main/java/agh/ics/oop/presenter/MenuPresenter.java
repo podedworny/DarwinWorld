@@ -224,7 +224,6 @@ public class MenuPresenter implements Initializable {
                     preset.valueProperty().addListener((observable, oldValue, newValue) -> {
                         Arguments args = loadPreset(newValue);
                         if (args != null) {
-                            // Ustaw wartości pól z wczytanych argumentów
                             mapType.setValue(args.mapType());
                             mapWidth.setText(String.valueOf(args.mapWidth()));
                             mapHeight.setText(String.valueOf(args.mapHeight()));
@@ -246,6 +245,7 @@ public class MenuPresenter implements Initializable {
                             waterMapDaysTextField.setText(String.valueOf(args.waterDays()));
                             waterMapPercentageTextField.setText(String.valueOf(args.waterPercentage()));
                         }
+                        updateButtonAvailability(newValue);
                     });
                     preset.setValue(preset.getItems().get(0));
                 }
@@ -290,7 +290,6 @@ public class MenuPresenter implements Initializable {
 
                 try (FileWriter writer = new FileWriter(presetFile)) {
                     writer.write(json);
-                    System.out.println("JSON data has been written to: " + presetFile.getAbsolutePath());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -298,23 +297,24 @@ public class MenuPresenter implements Initializable {
                 preset.getItems().add(presetNameValue);
 
                 preset.setValue(presetNameValue);
+                presetName.clear();
             }
         }
     }
+
     private Arguments loadPreset(String presetName) {
         String presetsFolder = "/presets";
         File presetsDir = new File(Objects.requireNonNull(getClass().getResource(presetsFolder)).getFile());
         File presetFile = new File(presetsDir, presetName + ".json");
 
-        try {
+        try (FileReader fileReader = new FileReader(presetFile)) {
             Gson gson = new Gson();
-            return gson.fromJson(new FileReader(presetFile), Arguments.class);
+            return gson.fromJson(fileReader, Arguments.class);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
-
     private void updatePreset(String presetName, Arguments args) {
         String presetsFolder = "/presets";
         File presetsDir = new File(Objects.requireNonNull(getClass().getResource(presetsFolder)).getFile());
@@ -324,7 +324,6 @@ public class MenuPresenter implements Initializable {
             Gson gson = new Gson();
             String json = gson.toJson(args);
             writer.write(json);
-            System.out.println("JSON data has been updated for preset: " + presetName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -339,16 +338,22 @@ public class MenuPresenter implements Initializable {
 
             if (presetFile.exists()) {
                 if (presetFile.delete()) {
+                    if(preset.getSelectionModel().getSelectedIndex()==0)
+                        preset.getSelectionModel().select(1);
                     preset.getItems().remove(selectedPreset);
-                    System.out.println("Preset has been deleted: " + selectedPreset);
-                } else {
-                    System.out.println("Unable to delete the preset: " + selectedPreset);
                 }
-            } else {
-                System.out.println("Preset does not exist: " + selectedPreset);
             }
-        } else {
-            System.out.println("No preset selected.");
         }
     }
+
+    private boolean isRestrictedPreset(String presetName) {
+        return presetName.matches("NormalMap[12]|WaterMap[12]");
+    }
+
+    private void updateButtonAvailability(String selectedPreset) {
+        boolean isRestrictedPreset = isRestrictedPreset(selectedPreset);
+        editSet.setDisable(isRestrictedPreset);
+        deleteButton.setDisable(isRestrictedPreset);
+    }
+
 }

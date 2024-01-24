@@ -44,7 +44,7 @@ public class Simulation implements Runnable{
                 writer = new FileWriter(fileName);
                 csvWriter = new CSVWriter(writer);
 
-                String[] header = {"Day", "Number of animals", "Number of grass fields", "Most popular genome", "Average energy level", "Average child count", "Average dead animal age", "Number of animals ever lived"};
+                String[] header = {"Day", "Number of animals", "Number of grass fields", "Most popular genome", "Average energy level", "Average child count", "Average dead animal age", "Number of animals ever lived","Number of free fields"};
                 csvWriter.writeNext(header);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -87,7 +87,8 @@ public class Simulation implements Runnable{
                                     String.valueOf(map.averageEnergyLevel()),
                                     String.valueOf(map.averageChildrenCount()),
                                     String.valueOf(map.averageAge()),
-                                    String.valueOf(map.everAnimalCount())
+                                    String.valueOf(map.everAnimalCount()),
+                                    String.valueOf(map.getFreeFields())
                             };
                             csvWriter.writeNext(data);
                             csvWriter.flush();

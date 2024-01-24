@@ -7,6 +7,7 @@ import agh.ics.oop.model.simulation.Arguments;
 import agh.ics.oop.model.simulation.Simulation;
 import agh.ics.oop.model.util.ImageBox;
 import agh.ics.oop.model.util.MapChangeListener;
+import agh.ics.oop.model.util.MapDirection;
 import agh.ics.oop.model.util.Vector2d;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -107,6 +108,8 @@ public class SimulationPresenter implements MapChangeListener {
             mapGrid.getRowConstraints().add(row);
         }
 
+        MapDirection[] mostPopularGenom = map.getMostPopularGenom();
+
         for (int i = bottomLeft.getX(); i < topRight.getX(); i++) {
             for (int j = bottomLeft.getY(); j < topRight.getY(); j++) {
 
@@ -127,6 +130,8 @@ public class SimulationPresenter implements MapChangeListener {
                         if (animal!=null) {
                             if(animal.equals(trackedAnimal)){
                                 pane.setStyle("-fx-background-color: #e19d5c; -fx-border-color: black; -fx-border-width: 0.5px;");
+                            } else if (Arrays.equals(mostPopularGenom,animal.getGenom().getMoves())) {
+                                pane.setStyle("-fx-background-color: #ff0000; -fx-border-color: black; -fx-border-width: 0.5px;");
                             }
                             imageBox = new ImageBox(ANIMAL,animal.getEnergy(),worldMap.getArgs().animalEnergy());
                             imageBox.setRotation(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI());

@@ -9,6 +9,7 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
+<?import javafx.scene.control.CheckBox?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             minHeight="800.0" minWidth="450.0"
@@ -136,6 +137,10 @@
             <HBox alignment="CENTER" spacing="10">
                 <Label text="Refresh time (ms): "/>
                 <TextField fx:id="coolDown" />
+            </HBox>
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Save everyday date to CSV: "/>
+                <CheckBox fx:id="dataCheckBox"/>
             </HBox>
             <HBox alignment="CENTER">
                 <Button fx:id="commitButton" text="Commit" onAction="#startSimulation"/>

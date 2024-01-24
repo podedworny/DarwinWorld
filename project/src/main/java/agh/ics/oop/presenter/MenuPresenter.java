@@ -59,8 +59,10 @@ public class MenuPresenter implements Initializable {
     public Button editSet;
     public Button saveSet;
     public Button deleteButton;
+    public CheckBox dataCheckBox;
     @FXML
     private TextField waterMapTextField;
+    private boolean state;
 
     public void startSimulation() throws Exception {
         Arguments args = gatherArguments();
@@ -78,10 +80,12 @@ public class MenuPresenter implements Initializable {
             map = new RectangularMap(args, presenter);
         else
             map = new WaterMap(args, presenter);
-
+        dataCheckBox.setOnAction(e -> {
+            state = dataCheckBox.isSelected();
+        });
         presenter.setWorldMap(map);
         configureStage(primaryStage, viewRoot);
-        Simulation simulation = new Simulation(args.coolDown(), args.grassEachDay(), map);
+        Simulation simulation = new Simulation(args.coolDown(), args.grassEachDay(), map,state);
         presenter.setSimulation(simulation);
         primaryStage.show();
     }

@@ -17,34 +17,38 @@ public class Simulation implements Runnable{
     private final IMap map;
     private final int coolDown;
     private final int grassEachDay;
-    private final String simulationName;
-    private final String fileName;
+    private String simulationName;
+    private String fileName;
     private FileWriter writer;
     private CSVWriter csvWriter;
     private SimulationState state = SimulationState.STARTED;
+    private final boolean saveData;
 
-    public Simulation(int coolDown, int grassEachDay, IMap map) {
+    public Simulation(int coolDown, int grassEachDay, IMap map, boolean saveData) {
         this.map = map;
         this.coolDown = coolDown;
         this.grassEachDay = grassEachDay;
+        this.saveData = saveData;
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
-        this.simulationName = dateFormat.format(new Date());
-        this.fileName = "simulationRaports/simulationreport-" + simulationName + ".csv";
+        if(saveData){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
+            this.simulationName = dateFormat.format(new Date());
+            this.fileName = "simulationRaports/simulationreport-" + simulationName + ".csv";
 
-        try {
-            File directory = new File("simulationRaports/");
-            if (!directory.exists()) {
-                directory.mkdirs();
+            try {
+                File directory = new File("simulationRaports/");
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                writer = new FileWriter(fileName);
+                csvWriter = new CSVWriter(writer);
+
+                String[] header = {"Day", "Number of animals", "Number of grass fields", "Most popular genom", "Average energy level", "Average child count", "Average dead animal age", "Number of animals ever lived"};
+                csvWriter.writeNext(header);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            writer = new FileWriter(fileName);
-            csvWriter = new CSVWriter(writer);
-
-            String[] header = {"Day", "Number of animals", "Number of grass fields", "Most popular genom", "Average energy level", "Average child count","Average dead animal age", "Number of animals ever lived"};
-            csvWriter.writeNext(header);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -73,6 +77,7 @@ public class Simulation implements Runnable{
                 case STARTED -> {
 
 //                    try {
+                    if(saveData) {
                         try {
                             String[] data = {
                                     String.valueOf(map.getDay()),
@@ -89,6 +94,7 @@ public class Simulation implements Runnable{
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
+                    }
                         map.deleteDeadAnimals();
                         map.moveAnimals();
                         map.eatGrass();
@@ -107,7 +113,8 @@ public class Simulation implements Runnable{
                 }
                 case STOPED -> sleep(100);
                 case FINISHED -> {
-                    closeCsvWriter();
+                    if(saveData)
+                        closeCsvWriter();
                     return;
                 }
             }

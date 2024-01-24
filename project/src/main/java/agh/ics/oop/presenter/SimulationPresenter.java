@@ -210,7 +210,7 @@ public class SimulationPresenter implements MapChangeListener {
         NumberAxis yAxis = new NumberAxis(0,max(map.numberOfAnimals()*2,map.getGrassFields()*2), 1);
 
         chart = new LineChart<>(xAxis, yAxis);
-        chart.setMaxSize(350,350);
+        chart.setMaxSize(450,350);
 
         chart.setCreateSymbols(false);
         chart.setHorizontalGridLinesVisible(false);
@@ -315,6 +315,7 @@ public class SimulationPresenter implements MapChangeListener {
             simulation.stopSimulation();
             state = 0;
             simulationButton.setText("Start Simulation");
+            mapChanged(map);
         }
     }
 

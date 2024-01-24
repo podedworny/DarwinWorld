@@ -68,6 +68,15 @@ public class MenuPresenter implements Initializable {
     public void startSimulation() throws Exception {
         Arguments args = gatherArguments();
 
+        if(args.minMut() > args.maxMut() || args.maxMut() > args.genomeLength()){
+            showError("Wrong data", "Check mutation and genom lenght");
+            return;
+        }
+        if(args.mapWidth()*args.mapHeight() < args.grassAtStart() || args.mapWidth()*args.mapHeight() < args.animalInitNumber()){
+            showError("Wrong data", "Check number of animals and grass");
+            return;
+        }
+
         Stage primaryStage = new Stage();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(SimulationApp.class.getClassLoader().getResource("simulation.fxml"));
@@ -81,14 +90,23 @@ public class MenuPresenter implements Initializable {
             map = new RectangularMap(args, presenter);
         else
             map = new WaterMap(args, presenter);
+
         dataCheckBox.setOnAction(e -> {
             state = dataCheckBox.isSelected();
         });
+
         presenter.setWorldMap(map);
         configureStage(primaryStage, viewRoot);
-        Simulation simulation = new Simulation(args.coolDown(), args.grassEachDay(), map,state);
+        Simulation simulation = new Simulation(args.coolDown(), args.grassEachDay(), map, state);
         presenter.setSimulation(simulation);
         primaryStage.show();
+    }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private Arguments gatherArguments() {
@@ -124,7 +142,6 @@ public class MenuPresenter implements Initializable {
                 energyT, minM, maxM, genomeL, var, waterNumber, waterPercentage, waterDays);
     }
 
-
     private static void configureStage(Stage primaryStage, BorderPane viewRoot) {
         var scene = new Scene(viewRoot);
         primaryStage.setScene(scene);
@@ -157,23 +174,24 @@ public class MenuPresenter implements Initializable {
                 waterMapPercentageTextField.setDisable(true);
             }
         });
-        waterMapTextField.setTextFormatter(createIntegerTextFormatter(10,1000)); // powinny byc inne ograniczenia
-        waterMapDaysTextField.setTextFormatter(createIntegerTextFormatter(7,1000));
-        waterMapPercentageTextField.setTextFormatter(createIntegerTextFormatter(50,1000));
-        mapWidth.setTextFormatter(createIntegerTextFormatter(30, 1000));
-        mapHeight.setTextFormatter(createIntegerTextFormatter(30, 1000));
-        grassEnergy.setTextFormatter(createIntegerTextFormatter(10, 1000));
-        copulationEnergy.setTextFormatter(createIntegerTextFormatter(30, 1000));
-        animalEnergy.setTextFormatter(createIntegerTextFormatter(50, 1000));
-        energyCost.setTextFormatter(createIntegerTextFormatter(1, 1000));
-        animalInitNumber.setTextFormatter(createIntegerTextFormatter(10, 1000));
-        grassEachDay.setTextFormatter(createIntegerTextFormatter(5, 1000));
-        coolDown.setTextFormatter(createIntegerTextFormatter(20, 1000));
-        grassAtStart.setTextFormatter(createIntegerTextFormatter(20, 1000));
-        energyTaken.setTextFormatter(createIntegerTextFormatter(5, 1000));
-        minMut.setTextFormatter(createIntegerTextFormatter(5, 1000));
-        maxMut.setTextFormatter(createIntegerTextFormatter(5, 1000));
-        genomeLen.setTextFormatter(createIntegerTextFormatter(5, 1000));
+        waterMapTextField.setTextFormatter(createIntegerTextFormatter(10,1,100));
+        waterMapDaysTextField.setTextFormatter(createIntegerTextFormatter(7,1,1000));
+        waterMapPercentageTextField.setTextFormatter(createIntegerTextFormatter(50,0,200));
+        mapWidth.setTextFormatter(createIntegerTextFormatter(30, 1,100));
+        mapHeight.setTextFormatter(createIntegerTextFormatter(30, 1,100));
+        grassEnergy.setTextFormatter(createIntegerTextFormatter(10, 1,100));
+        copulationEnergy.setTextFormatter(createIntegerTextFormatter(30, 1,100));
+        animalEnergy.setTextFormatter(createIntegerTextFormatter(50, 1,100));
+        energyCost.setTextFormatter(createIntegerTextFormatter(1, 1,100));
+        animalInitNumber.setTextFormatter(createIntegerTextFormatter(10, 0,100));
+        grassEachDay.setTextFormatter(createIntegerTextFormatter(5, 0,100));
+        coolDown.setTextFormatter(createIntegerTextFormatter(200, 100,3000));
+        grassAtStart.setTextFormatter(createIntegerTextFormatter(20, 0,100));
+        energyTaken.setTextFormatter(createIntegerTextFormatter(5, 0,50));
+        genomeLen.setTextFormatter(createIntegerTextFormatter(5, 0,30));
+        maxMut.setTextFormatter(createIntegerTextFormatter(5,0, 30));
+        minMut.setTextFormatter(createIntegerTextFormatter(5, 0,30));
+
         initializePresetComboBox();
 
         editSet.setCursor(Cursor.HAND);
@@ -185,7 +203,7 @@ public class MenuPresenter implements Initializable {
         preset.setCursor(Cursor.HAND);
     }
 
-    private TextFormatter<Integer> createIntegerTextFormatter(int initialValue, int upperLimit) {
+    private TextFormatter<Integer> createIntegerTextFormatter(int initialValue, int minValue, int maxValue) {
         UnaryOperator<TextFormatter.Change> integerFilter = change -> {
             String newText = change.getControlNewText();
             if (newText.matches("\\d*")) {
@@ -197,8 +215,10 @@ public class MenuPresenter implements Initializable {
         TextFormatter<Integer> textFormatter = new TextFormatter<>(new IntegerStringConverter(), initialValue, integerFilter);
 
         textFormatter.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue > upperLimit) {
-                textFormatter.setValue(upperLimit);
+            if (newValue > maxValue) {
+                textFormatter.setValue(maxValue);
+            } else if (newValue < minValue) {
+                textFormatter.setValue(minValue);
             }
         });
 

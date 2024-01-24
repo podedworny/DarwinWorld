@@ -49,6 +49,7 @@ public class SimulationPresenter implements MapChangeListener {
     public Label graph;
     public Label simulationID;
     public Button simulationButton;
+    public Button genomeButton;
     private int state=0;
     private LineChart<Number,Number> chart;
     private IMap map;
@@ -128,7 +129,7 @@ public class SimulationPresenter implements MapChangeListener {
                     if (path.equals("paw")) {
                         Animal animal = worldMap.getAnimal(new Vector2d(i, j));
                         if (animal!=null) {
-                            if(animal.equals(trackedAnimal)){
+                            if(trackedAnimal != null && worldMap.positionContainsAnimal(new Vector2d(i, j), trackedAnimal)){
                                 pane.setStyle("-fx-background-color: #e19d5c; -fx-border-color: black; -fx-border-width: 0.5px;");
                             }
                             imageBox = new ImageBox(ANIMAL,animal.getEnergy(),worldMap.getArgs().animalEnergy());
@@ -310,8 +311,10 @@ public class SimulationPresenter implements MapChangeListener {
             startSimulation();
             state = 1;
             simulationButton.setText("Stop Simulation");
+            genomeButton.setDisable(true);
         }
         else {
+            genomeButton.setDisable(false);
             simulation.stopSimulation();
             state = 0;
             simulationButton.setText("Start Simulation");
@@ -334,14 +337,15 @@ public class SimulationPresenter implements MapChangeListener {
             for (int j = bottomLeft.getY(); j < topRight.getY(); j++) {
                 Pane pane = new Pane();
                 if (map.objectAt(new Vector2d(i, j)) != null) {
-                    ImageBox imageBox = null;
+                    ImageBox imageBox;
                     Animal animal = map.getAnimal(new Vector2d(i, j));
                     if (animal != null) {
                         if (mostPopularGenome.equals(animal.getGenome().getMoves())) {
-                            pane.setStyle("-fx-background-color: #ff0000; -fx-border-color: black; -fx-border-width: 0.5px;");
+                            pane.setStyle("-fx-background-color: #ff7070; -fx-border-color: black; -fx-border-width: 0.5px;");
                             imageBox = new ImageBox(ANIMAL,animal.getEnergy(),map.getArgs().animalEnergy());
                             imageBox.setRotation(map.objectAt(new Vector2d(i, j)).getOrientation().getI());
                             imageBox.setFit(CELL * 0.7);
+                            setOnAnimalClicked(imageBox, animal);
                             mapGrid.add(pane, i - bottomLeft.getX(), map.getArgs().mapHeight() - (j - bottomLeft.getY()) - 1);
                             mapGrid.add(imageBox, i - bottomLeft.getX(), map.getArgs().mapHeight() - (j - bottomLeft.getY()) - 1);
                         }

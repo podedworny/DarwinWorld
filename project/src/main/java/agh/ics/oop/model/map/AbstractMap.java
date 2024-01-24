@@ -350,4 +350,8 @@ public abstract class AbstractMap implements IMap {
     public int getFreeFields(){
         return fields-grassFields;
     }
+
+    public boolean positionContainsAnimal(Vector2d position, Animal animal){
+        return animals.get(position).contains(animal);
+    }
 }

@@ -60,6 +60,7 @@ public class Animal implements WorldElement {
     public Vector2d getPosition(){
         return position;
     }
+
     @Override
     public boolean isAt(Vector2d position) {
         return this.position.equals(position);

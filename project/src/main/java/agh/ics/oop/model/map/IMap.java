@@ -54,4 +54,5 @@ public interface IMap {
     int everAnimalCount();
     int getID();
     int getFreeFields();
+    boolean positionContainsAnimal(Vector2d position, Animal animal);
 }

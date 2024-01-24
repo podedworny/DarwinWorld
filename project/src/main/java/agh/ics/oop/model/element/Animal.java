@@ -37,7 +37,7 @@ public class Animal implements WorldElement {
         this.orientation = directions[random.nextInt(directions.length)];
         this.position = new Vector2d(random.nextInt(width),random.nextInt(height));
         this.energy = energy;
-        this.genom = new Genom(genomLen, minMutation, maxMutation);
+        this.genom = new Genom(genomLen);
         age = 0;
         childrenCount = 0;
         myId = ID;

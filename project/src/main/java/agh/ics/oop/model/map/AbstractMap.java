@@ -166,7 +166,7 @@ public abstract class AbstractMap implements IMap {
 
     public Animal animalCopulation(Animal mother, Animal father){
         MapDirection[] moves = childMoves(mother,father);
-        Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves), allAnimalList.size()+1);
+        Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves, args.minMut(), args.maxMut()), allAnimalList.size()+1);
         mother.decreaseEnergy(args.energyTaken());
         father.decreaseEnergy(args.energyTaken());
         mother.addKid(child);

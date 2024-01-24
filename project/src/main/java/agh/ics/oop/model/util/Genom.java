@@ -7,9 +7,8 @@ import java.util.stream.IntStream;
 public class Genom {
     private final MapDirection[] moves;
     private int index;
-    private int minMutation;
-    private int maxMutation;
-    public Genom(int len, int minMutation, int maxMutation) {
+
+    public Genom(int len) {
         Random random = new Random();
         MapDirection[] directions = MapDirection.values();
         MapDirection[] moves = new MapDirection[len];
@@ -18,25 +17,23 @@ public class Genom {
         }
         this.moves = moves;
         this.index = random.nextInt(moves.length);
-        this.minMutation = minMutation;
-        this.maxMutation = maxMutation;
     }
 
-    public Genom(MapDirection[] moves){
+    public Genom(MapDirection[] moves, int minMutation, int maxMutation){
         Random random = new Random();
         this.moves = moves;
         this.index = random.nextInt(moves.length);
-        mutation();
+
+        if(minMutation != 0 && maxMutation != 0) mutation(minMutation, maxMutation);
     }
 
-    private void mutation(){
+    private void mutation(int minMutation, int maxMutation){
         Random random = new Random();
-        int mutationCount = random.nextInt(maxMutation - minMutation + 1) + minMutation;
+        int mutationCount = (minMutation==maxMutation) ? minMutation : random.nextInt(maxMutation - minMutation) + minMutation;
         List<Integer> indexes = IntStream.range(0,moves.length).boxed().collect(Collectors.toList());
         Collections.shuffle(indexes);
-        indexes.subList(0,mutationCount);
         MapDirection[] directions = MapDirection.values();
-        for (Integer index : indexes) {
+        for (Integer index : indexes.subList(0,mutationCount)) {
             moves[index] = directions[random.nextInt(directions.length)];
         }
     }

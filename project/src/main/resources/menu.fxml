@@ -112,11 +112,10 @@
                 <Label text="Maximum number of mutations: "/>
                 <TextField fx:id="maxMut" />
             </HBox>
-<!--            wariantu mutacji nie ma bo chyba nie musi byc-->
 
             <HBox alignment="CENTER" spacing="10">
-                <Label text="Genom lenght: "/>
-                <TextField fx:id="genomLen" />
+                <Label text="Genome length: "/>
+                <TextField fx:id="genomeLen" />
             </HBox>
 
             <HBox alignment="CENTER" spacing="10" >

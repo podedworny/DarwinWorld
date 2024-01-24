@@ -46,7 +46,7 @@ public class MenuPresenter implements Initializable {
     public TextField energyTaken;
     public TextField minMut;
     public TextField maxMut;
-    public TextField genomLen;
+    public TextField genomeLen;
     public ComboBox<String> variant;
     public TextField coolDown;
     public Button commitButton;
@@ -60,6 +60,7 @@ public class MenuPresenter implements Initializable {
     public Button saveSet;
     public Button deleteButton;
     public CheckBox dataCheckBox;
+    public Label waterMapLabel;
     @FXML
     private TextField waterMapTextField;
     private boolean state;
@@ -115,12 +116,12 @@ public class MenuPresenter implements Initializable {
         int energyT = Integer.parseInt(energyTaken.getText());
         int minM = Integer.parseInt(minMut.getText());
         int maxM = Integer.parseInt(maxMut.getText());
-        int genomL = Integer.parseInt(genomLen.getText());
+        int genomeL = Integer.parseInt(genomeLen.getText());
         String var = variant.getValue();
 
         return new Arguments(mapa, mapW, mapH, grassE, copulationE,
                 animalE, energyC, animalInitN, grassEachD, coolD, grassStart,
-                energyT, minM, maxM, genomL, var, waterNumber, waterPercentage, waterDays);
+                energyT, minM, maxM, genomeL, var, waterNumber, waterPercentage, waterDays);
     }
 
 
@@ -172,7 +173,7 @@ public class MenuPresenter implements Initializable {
         energyTaken.setTextFormatter(createIntegerTextFormatter(5, 1000));
         minMut.setTextFormatter(createIntegerTextFormatter(5, 1000));
         maxMut.setTextFormatter(createIntegerTextFormatter(5, 1000));
-        genomLen.setTextFormatter(createIntegerTextFormatter(5, 1000));
+        genomeLen.setTextFormatter(createIntegerTextFormatter(5, 1000));
         initializePresetComboBox();
 
         editSet.setCursor(Cursor.HAND);
@@ -237,7 +238,7 @@ public class MenuPresenter implements Initializable {
                             energyTaken.setText(String.valueOf(args.energyTaken()));
                             minMut.setText(String.valueOf(args.minMut()));
                             maxMut.setText(String.valueOf(args.maxMut()));
-                            genomLen.setText(String.valueOf(args.genomLenght()));
+                            genomeLen.setText(String.valueOf(args.genomeLength()));
                             variant.setValue(args.variant());
                             coolDown.setText(String.valueOf(args.coolDown()));
                             grassAtStart.setText(String.valueOf(args.grassAtStart()));

@@ -28,6 +28,7 @@ import java.awt.*;
 import javafx.scene.input.MouseEvent;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.List;
 import static java.lang.Math.*;
 
 public class SimulationPresenter implements MapChangeListener {
@@ -108,7 +109,6 @@ public class SimulationPresenter implements MapChangeListener {
             mapGrid.getRowConstraints().add(row);
         }
 
-        MapDirection[] mostPopularGenom = map.getMostPopularGenom();
 
         for (int i = bottomLeft.getX(); i < topRight.getX(); i++) {
             for (int j = bottomLeft.getY(); j < topRight.getY(); j++) {
@@ -130,8 +130,6 @@ public class SimulationPresenter implements MapChangeListener {
                         if (animal!=null) {
                             if(animal.equals(trackedAnimal)){
                                 pane.setStyle("-fx-background-color: #e19d5c; -fx-border-color: black; -fx-border-width: 0.5px;");
-                            } else if (Arrays.equals(mostPopularGenom,animal.getGenom().getMoves())) {
-                                pane.setStyle("-fx-background-color: #ff0000; -fx-border-color: black; -fx-border-width: 0.5px;");
                             }
                             imageBox = new ImageBox(ANIMAL,animal.getEnergy(),worldMap.getArgs().animalEnergy());
                             imageBox.setRotation(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI());
@@ -162,8 +160,8 @@ public class SimulationPresenter implements MapChangeListener {
         }
 
         dayLabel.setText("Day " + worldMap.getDay());
-        mapStats.setText("Number of animals: "+ worldMap.numberOfAnimals()+"\nMost popular genom: "
-                + Arrays.toString(worldMap.getMostPopularGenom())
+        mapStats.setText("Number of animals: "+ worldMap.numberOfAnimals()+"\nMost popular genome: "
+                + worldMap.getMostPopularGenome()
                 + "\nNumber of grass fields: "+ worldMap.getGrassFields()
                 + "\nAverage energy level: "
                 + worldMap.averageEnergyLevel()+"\nAverage child count: "
@@ -248,21 +246,10 @@ public class SimulationPresenter implements MapChangeListener {
 
     @Override
     public void mapChanged(IMap worldMap) {
-//        if(map.getDay()==1){
         Platform.runLater(() -> {
                     clearGrid();
                     drawMap(worldMap);
                 });
-//        }
-//        else {
-//            simulation.getMapLock().lock();
-//            try {
-//                clearGrid();
-//                drawMap(worldMap);
-//            } finally {
-//                simulation.getMapLock().unlock();
-//            }
-//        }
     }
 
     public void startSimulation() {
@@ -308,7 +295,7 @@ public class SimulationPresenter implements MapChangeListener {
         stats.setText(
                   "ID: " + animal.getMyId()
                 + "\nPosition: " + animal.getPosition()
-                + "\nGenom: " + animal.getGenom()
+                + "\nGenome: " + animal.getGenome()
                 + "\nCurrent index: " + animal.getIndex()
                 + "\nEnergy level: " + animal.getEnergy()
                 + "\nKids count: " + animal.getChildrenCount()
@@ -329,5 +316,42 @@ public class SimulationPresenter implements MapChangeListener {
             state = 0;
             simulationButton.setText("Start Simulation");
         }
+    }
+
+    private void popularGenome() {
+        List<MapDirection> mostPopularGenome = map.getMostPopularGenome();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        int width = (int) (screenSize.width * 0.7);
+        int height = (int) (screenSize.height * 0.85);
+        int CELL = min(height/ map.getHeight(),width/ map.getWidth());
+        Arguments args = map.getArgs();
+        Vector2d topRight = new Vector2d(args.mapWidth(), args.mapHeight());
+        Vector2d bottomLeft = new Vector2d(0, 0);
+
+        for (int i = bottomLeft.getX(); i < topRight.getX(); i++) {
+            for (int j = bottomLeft.getY(); j < topRight.getY(); j++) {
+                Pane pane = new Pane();
+                if (map.objectAt(new Vector2d(i, j)) != null) {
+                    ImageBox imageBox = null;
+                    Animal animal = map.getAnimal(new Vector2d(i, j));
+                    if (animal != null) {
+                        if (mostPopularGenome.equals(animal.getGenome().getMoves())) {
+                            pane.setStyle("-fx-background-color: #ff0000; -fx-border-color: black; -fx-border-width: 0.5px;");
+                            imageBox = new ImageBox(ANIMAL,animal.getEnergy(),map.getArgs().animalEnergy());
+                            imageBox.setRotation(map.objectAt(new Vector2d(i, j)).getOrientation().getI());
+                            imageBox.setFit(CELL * 0.7);
+                            mapGrid.add(pane, i - bottomLeft.getX(), map.getArgs().mapHeight() - (j - bottomLeft.getY()) - 1);
+                            mapGrid.add(imageBox, i - bottomLeft.getX(), map.getArgs().mapHeight() - (j - bottomLeft.getY()) - 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void onShowGenome(ActionEvent actionEvent) {
+        Platform.runLater(this::popularGenome);
     }
 }

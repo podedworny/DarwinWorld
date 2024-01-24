@@ -101,6 +101,7 @@
         <VBox alignment="CENTER" minHeight="50.0">
             <HBox alignment="CENTER" spacing="10">
                 <Button text="Start Simulation" onAction="#onSimulationButtonClicked" fx:id="simulationButton"/>
+                <Button text="Most Popular Genome" onAction="#onShowGenome" fx:id="genomeButton"/>
             </HBox>
         </VBox>
     </bottom>

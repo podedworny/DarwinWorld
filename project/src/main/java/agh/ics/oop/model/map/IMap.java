@@ -7,6 +7,8 @@ import agh.ics.oop.model.util.MapDirection;
 import agh.ics.oop.model.util.Vector2d;
 import agh.ics.oop.model.util.MapChangeListener;
 
+import java.util.List;
+
 public interface IMap {
     void deleteDeadAnimals();
 
@@ -36,7 +38,7 @@ public interface IMap {
 
     int getDay();
 
-    MapDirection[] getMostPopularGenom();
+    List<MapDirection> getMostPopularGenome();
 
     int getGrassFields();
 

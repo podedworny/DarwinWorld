@@ -51,4 +51,5 @@ public interface IMap {
     boolean isWaterMap();
     int everAnimalCount();
     int getID();
+    int getFreeFields();
 }

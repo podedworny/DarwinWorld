@@ -100,8 +100,7 @@
     <bottom>
         <VBox alignment="CENTER" minHeight="50.0">
             <HBox alignment="CENTER" spacing="10">
-                <Button text="Start Simulation" onAction="#onSimulationStartClicked" fx:id="startSimulation" disable="false"/>
-                <Button text="Stop Simulation" onAction="#stopSimulation" fx:id="stopSimulationButton" disable="true"/>
+                <Button text="Start Simulation" onAction="#onSimulationButtonClicked" fx:id="simulationButton"/>
             </HBox>
         </VBox>
     </bottom>

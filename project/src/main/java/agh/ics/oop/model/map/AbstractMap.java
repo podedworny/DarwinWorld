@@ -343,4 +343,8 @@ public abstract class AbstractMap implements IMap {
     public int getID(){
         return myID;
     }
+
+    public int getFreeFields(){
+        return fields-grassFields;
+    }
 }

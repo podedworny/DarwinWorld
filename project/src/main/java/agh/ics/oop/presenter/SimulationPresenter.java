@@ -9,6 +9,7 @@ import agh.ics.oop.model.util.ImageBox;
 import agh.ics.oop.model.util.MapChangeListener;
 import agh.ics.oop.model.util.Vector2d;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -45,8 +46,8 @@ public class SimulationPresenter implements MapChangeListener {
     public Label info;
     public Label graph;
     public Label simulationID;
-    public Button startSimulation;
-    public Button stopSimulationButton;
+    public Button simulationButton;
+    private int state=0;
     private LineChart<Number,Number> chart;
     private IMap map;
     private Simulation simulation;
@@ -66,8 +67,7 @@ public class SimulationPresenter implements MapChangeListener {
         this.primaryStage.setOnCloseRequest(event -> {
             simulation.setState(SimulationState.FINISHED);
         });
-        startSimulation.setCursor(Cursor.HAND);
-        stopSimulationButton.setCursor(Cursor.HAND);
+        simulationButton.setCursor(Cursor.HAND);
     }
 
     public void setWorldMap(IMap map){
@@ -163,7 +163,8 @@ public class SimulationPresenter implements MapChangeListener {
                 + "\nAverage energy level: "
                 + worldMap.averageEnergyLevel()+"\nAverage child count: "
                 + worldMap.averageChildrenCount()+"\nAverage dead animal age: "
-                + worldMap.averageAge()+"\nNumber of animals ever lived: " + worldMap.everAnimalCount());
+                + worldMap.averageAge()+"\nNumber of animals ever lived: " + worldMap.everAnimalCount()
+                +"\nNumber of free fields: " + worldMap.getFreeFields());
 
         plotChange();
         if (trackedAnimal!=null) {
@@ -259,9 +260,7 @@ public class SimulationPresenter implements MapChangeListener {
 //        }
     }
 
-    public void onSimulationStartClicked() {
-        startSimulation.setDisable(true);
-        stopSimulationButton.setDisable(false);
+    public void startSimulation() {
         if (firstClick) {
             Thread thread = new Thread((simulation));
             thread.start();
@@ -271,12 +270,6 @@ public class SimulationPresenter implements MapChangeListener {
         }
     }
 
-    public void stopSimulation(){
-        startSimulation.setDisable(false);
-        stopSimulationButton.setDisable(true);
-        simulation.stopSimulation();
-
-    }
 
     private void clearGrid() {
         mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0));
@@ -316,6 +309,20 @@ public class SimulationPresenter implements MapChangeListener {
                 + "\nKids count: " + animal.getChildrenCount()
                 + "\nDescendantCount: " + animal.descendantCalculate()
                 + "\nAge: " + animal.getAge()
+                + "\nGrass eaten: " + animal.getGrassEaten()
         );
+    }
+
+    public void onSimulationButtonClicked(ActionEvent actionEvent) {
+        if (state==0){
+            startSimulation();
+            state = 1;
+            simulationButton.setText("Stop Simulation");
+        }
+        else {
+            simulation.stopSimulation();
+            state = 0;
+            simulationButton.setText("Start Simulation");
+        }
     }
 }

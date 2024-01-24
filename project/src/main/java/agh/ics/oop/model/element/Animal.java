@@ -97,6 +97,9 @@ public class Animal implements WorldElement {
     public Genom getGenom() {
         return genom;
     }
+    public int getGrassEaten(){
+        return grassEaten;
+    }
 
     public int getEnergy() {
         return energy;

@@ -88,6 +88,10 @@
                                 <Pane style="-fx-background-color: #e19d5c;" minWidth="50" minHeight="50"/>
                                 <Label text=" -  Tracked animal" style="-fx-font-size: 20px;"/>
                             </HBox>
+                            <HBox>
+                                <Pane style="-fx-background-color: #ff7070;" minWidth="50" minHeight="50"/>
+                                <Label text=" -  Animals with most popular genom" style="-fx-font-size: 20px;"/>
+                            </HBox>
                             <Separator minWidth="1000"/>
                             <Label fx:id="trackingLabel" text="Click on animal to track" style="-fx-font-size: 25px; -fx-font-weight: bold"/>
                             <Label fx:id="stats" style="-fx-font-size: 20px"/>

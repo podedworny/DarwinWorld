@@ -108,7 +108,9 @@ public class SimulationPresenter implements MapChangeListener {
             mapGrid.getRowConstraints().add(row);
         }
 
-        MapDirection[] mostPopularGenom = map.getMostPopularGenom();
+        MapDirection[] mostPopularGenom = null;
+        if(simulation.getState()==SimulationState.STOPED)
+            mostPopularGenom = map.getMostPopularGenom();
 
         for (int i = bottomLeft.getX(); i < topRight.getX(); i++) {
             for (int j = bottomLeft.getY(); j < topRight.getY(); j++) {
@@ -130,8 +132,8 @@ public class SimulationPresenter implements MapChangeListener {
                         if (animal!=null) {
                             if(animal.equals(trackedAnimal)){
                                 pane.setStyle("-fx-background-color: #e19d5c; -fx-border-color: black; -fx-border-width: 0.5px;");
-                            } else if (Arrays.equals(mostPopularGenom,animal.getGenom().getMoves())) {
-                                pane.setStyle("-fx-background-color: #ff0000; -fx-border-color: black; -fx-border-width: 0.5px;");
+                            } else if (Arrays.equals(mostPopularGenom,animal.getGenom().getMoves()) && simulation.getState()==SimulationState.STOPED) {
+                                pane.setStyle("-fx-background-color: #ff7070; -fx-border-color: black; -fx-border-width: 0.5px;");
                             }
                             imageBox = new ImageBox(ANIMAL,animal.getEnergy(),worldMap.getArgs().animalEnergy());
                             imageBox.setRotation(worldMap.objectAt(new Vector2d(i, j)).getOrientation().getI());
@@ -212,7 +214,7 @@ public class SimulationPresenter implements MapChangeListener {
         NumberAxis yAxis = new NumberAxis(0,max(map.numberOfAnimals()*2,map.getGrassFields()*2), 1);
 
         chart = new LineChart<>(xAxis, yAxis);
-        chart.setMaxSize(350,350);
+        chart.setMaxSize(450,350);
 
         chart.setCreateSymbols(false);
         chart.setHorizontalGridLinesVisible(false);
@@ -328,6 +330,7 @@ public class SimulationPresenter implements MapChangeListener {
             simulation.stopSimulation();
             state = 0;
             simulationButton.setText("Start Simulation");
+            mapChanged(map);
         }
     }
 }

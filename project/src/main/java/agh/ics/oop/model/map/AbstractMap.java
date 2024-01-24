@@ -8,7 +8,6 @@ import agh.ics.oop.model.simulation.Arguments;
 import agh.ics.oop.model.util.MapDirection;
 import agh.ics.oop.model.util.Vector2d;
 import agh.ics.oop.model.util.MapChangeListener;
-import org.apache.commons.collections.map.ListOrderedMap;
 
 import java.util.*;
 
@@ -29,12 +28,12 @@ public abstract class AbstractMap implements IMap {
     private int sumDaysOfDeadAnimals=0;
     private int deadAnimals = 0;
     private int grassFields = 0;
-    private int equatorBottom = 0;
-    private int equatorHeight = 0;
-    private int equatorFields = 0;
+    private final int equatorBottom ;
+    private final int equatorHeight;
+    private final int equatorFields;
     private int equatorGrassFields = 0;
     private int worseFieldsGrass = 0;
-    private int worseFields = 0;
+    private final int worseFields;
     private final int myID;
     static int id=1;
 

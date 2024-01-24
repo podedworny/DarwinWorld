@@ -26,7 +26,6 @@ import javafx.stage.Stage;
 import javafx.scene.layout.GridPane;
 import java.awt.*;
 import javafx.scene.input.MouseEvent;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.List;
 import static java.lang.Math.*;

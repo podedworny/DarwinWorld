@@ -7,11 +7,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Simulation implements Runnable{
     private final IMap map;
@@ -65,18 +62,11 @@ public class Simulation implements Runnable{
         state = SimulationState.STOPED;
     }
 
-//    private final Lock mapLock = new ReentrantLock();
-//
-//    public Lock getMapLock() {
-//        return mapLock;
-//    }
 
     public void run(){
         while (true) {
             switch (state) {
                 case STARTED -> {
-
-//                    try {
                     if(saveData) {
                         try {
                             String[] data = {
@@ -102,9 +92,6 @@ public class Simulation implements Runnable{
                         map.reproduce();
                         map.placeNewGrass(grassEachDay);
                         map.animalsNextDate();
-//                    } finally {
-//                        mapLock.unlock();
-//                    }
                     try {
                         Thread.sleep(coolDown);
                     }

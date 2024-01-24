@@ -1,13 +1,13 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.util;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Genom {
-    private final MapDirection[] moves; // <- tablica z naszymi genami (kolejnymi ruchami)
-    private int index; // <- index gdzie aktualnie znajdujemy się w tablicy
-//    private MapDirection[] directions;
+    private final MapDirection[] moves;
+    private int index;
+
     public Genom(int len) {
         Random random = new Random();
         MapDirection[] directions = MapDirection.values();
@@ -19,48 +19,43 @@ public class Genom {
         this.index = random.nextInt(moves.length);
     }
 
-    public Genom(MapDirection[] moves){
+    public Genom(MapDirection[] moves, int minMutation, int maxMutation){
         Random random = new Random();
         this.moves = moves;
         this.index = random.nextInt(moves.length);
-        mutation();
+
+        if(minMutation != 0 && maxMutation != 0) mutation(minMutation, maxMutation);
     }
 
-    private void mutation(){
-        // wybieramy liczbe mutacji -> tworzymy liste indexow i mieszamy ja -> bierzemy tylko n liczbe mutacji
-        // dany index zmieniamy / narazie jest szansa ze moze byc ten sam ruch po mutacji ale to mozna zmienic
+    private void mutation(int minMutation, int maxMutation){
         Random random = new Random();
-        int mutationCount = random.nextInt(moves.length);
+        int mutationCount = (minMutation==maxMutation) ? minMutation : random.nextInt(maxMutation - minMutation) + minMutation;
         List<Integer> indexes = IntStream.range(0,moves.length).boxed().collect(Collectors.toList());
         Collections.shuffle(indexes);
-        indexes.subList(0,mutationCount);
         MapDirection[] directions = MapDirection.values();
-        for (Integer index : indexes) {
+        for (Integer index : indexes.subList(0,mutationCount)) {
             moves[index] = directions[random.nextInt(directions.length)];
         }
     }
 
-    public void nextIndexVariant(){  //wariant 3
+    public void nextIndexVariant(){
         Random random = new Random();
-        if(random.nextInt(10)<8){
-            if (index+1 == moves.length) {
-                index = 0;
-            }
-            else {
-                index++;
-            }
-        }
-        else{
-            index = random.nextInt(moves.length);
+        if(random.nextInt(10)<8)
+            nextIndexDefault();
+        else if(moves.length>1){
+            int newIndex;
+            do {
+                newIndex = random.nextInt(moves.length);
+            } while (newIndex == index);
+            index = newIndex;
         }
     }
+
     public void nextIndexDefault(){
-        if (index+1 == moves.length) {
+        if (index+1 == moves.length)
             index = 0;
-        }
-        else {
+        else
             index++;
-        }
     }
     public int getIndex() {
         return index;

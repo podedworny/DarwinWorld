@@ -1,4 +1,4 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.util;
 
 public enum MapDirection {
     N(0),
@@ -17,19 +17,6 @@ public enum MapDirection {
     public int getI() {
         return i;
     }
-
-//    public String toString(){
-//        return switch(this) {
-//            case N -> "Północ";
-//            case S -> "Południe";
-//            case NE -> "Północny-Wschód";
-//            case E -> "Wschód";
-//            case W -> "Zachód";
-//            case SE -> "Południowy-Wschód";
-//            case SW -> "Południowy-Zachód";
-//            case NW -> "Północny-Zachód";
-//        };
-//    }
 
     public String toString(){
         return switch(this) {

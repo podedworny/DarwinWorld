@@ -1,9 +1,11 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.map;
 
-import agh.ics.oop.presenter.SimulationPresenter;
-import javafx.scene.control.SplitPane;
-
-import java.util.Map;
+import agh.ics.oop.model.element.Animal;
+import agh.ics.oop.model.element.WorldElement;
+import agh.ics.oop.model.simulation.Arguments;
+import agh.ics.oop.model.util.MapDirection;
+import agh.ics.oop.model.util.Vector2d;
+import agh.ics.oop.model.util.MapChangeListener;
 
 public interface IMap {
     void deleteDeadAnimals();
@@ -15,8 +17,6 @@ public interface IMap {
     void reproduce();
 
     void placeNewGrass(int grassEachDay);
-
-    void descendantCounting();
 
     void animalsNextDate();
 
@@ -45,4 +45,11 @@ public interface IMap {
     double averageChildrenCount();
 
     double averageAge();
+    boolean canMoveTo(Vector2d position);
+    Vector2d getNewPosition(Vector2d position, MapDirection direction);
+    Animal getAnimal(Vector2d position);
+    boolean isWaterMap();
+    int everAnimalCount();
+    int getID();
+    int getFreeFields();
 }

@@ -1,7 +1,7 @@
 package agh.ics.oop.model.element;
 
 import agh.ics.oop.model.map.IMap;
-import agh.ics.oop.model.util.Genom;
+import agh.ics.oop.model.util.Genome;
 import agh.ics.oop.model.util.MapDirection;
 import agh.ics.oop.model.util.Vector2d;
 
@@ -11,7 +11,7 @@ public class Animal implements WorldElement {
     private final int myId;
     private Vector2d position;
     private MapDirection orientation;
-    private final Genom genom;
+    private final Genome genome;
     private int energy;
     private int age;
     private int childrenCount = 0;
@@ -19,25 +19,25 @@ public class Animal implements WorldElement {
     private int grassEaten;
     protected final List<Animal> kids = new LinkedList<>();
 
-    public Animal(Vector2d pos, int energy, Genom genom, int ID){
+    public Animal(Vector2d pos, int energy, Genome genome, int ID){
         MapDirection[] directions = MapDirection.values();
         Random random = new Random();
         this.orientation = directions[random.nextInt(directions.length)];
         this.position = pos;
         this.energy = energy;
-        this.genom = genom;
+        this.genome = genome;
         age = 0;
         childrenCount = 0;
         myId = ID;
     }
 
-    public Animal(int width, int height, int energy, int genomLen, int minMutation, int maxMutation, int ID){
+    public Animal(int width, int height, int energy, int genomeLen, int minMutation, int maxMutation, int ID){
         MapDirection[] directions = MapDirection.values();
         Random random = new Random();
         this.orientation = directions[random.nextInt(directions.length)];
         this.position = new Vector2d(random.nextInt(width),random.nextInt(height));
         this.energy = energy;
-        this.genom = new Genom(genomLen);
+        this.genome = new Genome(genomeLen);
         age = 0;
         childrenCount = 0;
         myId = ID;
@@ -45,10 +45,10 @@ public class Animal implements WorldElement {
 
     public void move(IMap map){
         MapDirection[] mapValues = MapDirection.values();
-        MapDirection[] genomTab = genom.getMoves();
-        int ind = genom.getIndex();
+        List<MapDirection> genomeTab = genome.getMoves();
+        int ind = genome.getIndex();
 
-        for (int i=0; i<mapValues[genomTab[ind].getI()].getI();i++)
+        for (int i=0; i<mapValues[genomeTab.get(ind).getI()].getI();i++)
             orientation = orientation.next();
 
         Vector2d newPosition = map.getNewPosition(position,orientation);
@@ -60,6 +60,7 @@ public class Animal implements WorldElement {
     public Vector2d getPosition(){
         return position;
     }
+
     @Override
     public boolean isAt(Vector2d position) {
         return this.position.equals(position);
@@ -94,8 +95,8 @@ public class Animal implements WorldElement {
                 .thenComparing(animal -> new Random().nextBoolean());
     }
 
-    public Genom getGenom() {
-        return genom;
+    public Genome getGenome() {
+        return genome;
     }
     public int getGrassEaten(){
         return grassEaten;
@@ -117,7 +118,7 @@ public class Animal implements WorldElement {
         return myId;
     }
     public int getIndex(){
-        return genom.getIndex();
+        return genome.getIndex();
     }
     public int getDeathDate(){
         return deathDate;

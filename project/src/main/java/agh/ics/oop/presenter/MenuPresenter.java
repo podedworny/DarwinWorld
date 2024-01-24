@@ -46,7 +46,7 @@ public class MenuPresenter implements Initializable {
     public TextField energyTaken;
     public TextField minMut;
     public TextField maxMut;
-    public TextField genomLen;
+    public TextField genomeLen;
     public ComboBox<String> variant;
     public TextField coolDown;
     public Button commitButton;
@@ -60,6 +60,7 @@ public class MenuPresenter implements Initializable {
     public Button saveSet;
     public Button deleteButton;
     public CheckBox dataCheckBox;
+    public Label waterMapLabel;
     @FXML
     private TextField waterMapTextField;
     private boolean state;
@@ -67,7 +68,7 @@ public class MenuPresenter implements Initializable {
     public void startSimulation() throws Exception {
         Arguments args = gatherArguments();
 
-        if(args.minMut() > args.maxMut() || args.maxMut() > args.genomLenght()){
+        if(args.minMut() > args.maxMut() || args.maxMut() > args.genomeLength()){
             showError("Wrong data", "Check mutation and genom lenght");
             return;
         }
@@ -133,12 +134,12 @@ public class MenuPresenter implements Initializable {
         int energyT = Integer.parseInt(energyTaken.getText());
         int minM = Integer.parseInt(minMut.getText());
         int maxM = Integer.parseInt(maxMut.getText());
-        int genomL = Integer.parseInt(genomLen.getText());
+        int genomeL = Integer.parseInt(genomeLen.getText());
         String var = variant.getValue();
 
         return new Arguments(mapa, mapW, mapH, grassE, copulationE,
                 animalE, energyC, animalInitN, grassEachD, coolD, grassStart,
-                energyT, minM, maxM, genomL, var, waterNumber, waterPercentage, waterDays);
+                energyT, minM, maxM, genomeL, var, waterNumber, waterPercentage, waterDays);
     }
 
     private static void configureStage(Stage primaryStage, BorderPane viewRoot) {
@@ -187,7 +188,7 @@ public class MenuPresenter implements Initializable {
         coolDown.setTextFormatter(createIntegerTextFormatter(200, 100,3000));
         grassAtStart.setTextFormatter(createIntegerTextFormatter(20, 0,100));
         energyTaken.setTextFormatter(createIntegerTextFormatter(5, 0,50));
-        genomLen.setTextFormatter(createIntegerTextFormatter(5, 0,30));
+        genomeLen.setTextFormatter(createIntegerTextFormatter(5, 0,30));
         maxMut.setTextFormatter(createIntegerTextFormatter(5,0, 30));
         minMut.setTextFormatter(createIntegerTextFormatter(5, 0,30));
 
@@ -201,7 +202,7 @@ public class MenuPresenter implements Initializable {
         mapType.setCursor(Cursor.HAND);
         preset.setCursor(Cursor.HAND);
     }
-    
+
     private TextFormatter<Integer> createIntegerTextFormatter(int initialValue, int minValue, int maxValue) {
         UnaryOperator<TextFormatter.Change> integerFilter = change -> {
             String newText = change.getControlNewText();
@@ -257,7 +258,7 @@ public class MenuPresenter implements Initializable {
                             energyTaken.setText(String.valueOf(args.energyTaken()));
                             minMut.setText(String.valueOf(args.minMut()));
                             maxMut.setText(String.valueOf(args.maxMut()));
-                            genomLen.setText(String.valueOf(args.genomLenght()));
+                            genomeLen.setText(String.valueOf(args.genomeLength()));
                             variant.setValue(args.variant());
                             coolDown.setText(String.valueOf(args.coolDown()));
                             grassAtStart.setText(String.valueOf(args.grassAtStart()));

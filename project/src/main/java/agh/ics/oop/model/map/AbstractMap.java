@@ -1,7 +1,7 @@
 package agh.ics.oop.model.map;
 
 import agh.ics.oop.model.element.Animal;
-import agh.ics.oop.model.util.Genom;
+import agh.ics.oop.model.util.Genome;
 import agh.ics.oop.model.element.Grass;
 import agh.ics.oop.model.element.WorldElement;
 import agh.ics.oop.model.simulation.Arguments;
@@ -19,7 +19,7 @@ public abstract class AbstractMap implements IMap {
     protected final List<Animal> animalList = new LinkedList<>();
     protected final Map<Vector2d, List<Animal>> animals = new HashMap<>();
     protected final Map<Vector2d, Grass> grasses = new HashMap<>();
-    private final Map<MapDirection[], Integer> genomDictionary = new HashMap<>();
+    private final Map<List<MapDirection>, Integer> genomeDictionary = new HashMap<>();
     protected final Arguments args;
     protected final int width;
     protected final int height;
@@ -28,12 +28,12 @@ public abstract class AbstractMap implements IMap {
     private int sumDaysOfDeadAnimals=0;
     private int deadAnimals = 0;
     private int grassFields = 0;
-    private int equatorBottom = 0;
-    private int equatorHeight = 0;
-    private int equatorFields = 0;
+    private final int equatorBottom ;
+    private final int equatorHeight;
+    private final int equatorFields;
     private int equatorGrassFields = 0;
     private int worseFieldsGrass = 0;
-    private int worseFields = 0;
+    private final int worseFields;
     private final int myID;
     static int id=1;
 
@@ -59,9 +59,9 @@ public abstract class AbstractMap implements IMap {
             placeAnimal(animal);
             animal.decreaseEnergy(args.energyCost());
             if (args.variant().equals("Default"))
-                animal.getGenom().nextIndexDefault();
+                animal.getGenome().nextIndexDefault();
             else
-                animal.getGenom().nextIndexVariant();
+                animal.getGenome().nextIndexVariant();
         }
     }
 
@@ -72,11 +72,11 @@ public abstract class AbstractMap implements IMap {
 
     private void placeStartAnimals(Arguments args) {
         for (int i = 0; i< args.animalInitNumber(); i++){
-            Animal animal = new Animal(width,height, args.animalEnergy(), args.genomLenght(), args.minMut(), args.maxMut(),allAnimalList.size()+1);
+            Animal animal = new Animal(width,height, args.animalEnergy(), args.genomeLength(), args.minMut(), args.maxMut(),allAnimalList.size()+1);
             animalList.add(animal);
             allAnimalList.add(animal);
             placeAnimal(animal);
-            genomDictionary.compute(animal.getGenom().getMoves(), (key, value) -> (value == null) ? 1 : value + 1);
+            genomeDictionary.compute(animal.getGenome().getMoves(), (key, value) -> (value == null) ? 1 : value + 1);
         }
     }
 
@@ -159,14 +159,14 @@ public abstract class AbstractMap implements IMap {
                 placeAnimal(kid);
                 animalList.add(kid);
                 allAnimalList.add(kid);
-                genomDictionary.compute(kid.getGenom().getMoves(), (key, value) -> (value == null) ? 1 : value + 1);
+                genomeDictionary.compute(kid.getGenome().getMoves(), (key, value) -> (value == null) ? 1 : value + 1);
             }
         }
     }
 
     public Animal animalCopulation(Animal mother, Animal father){
         MapDirection[] moves = childMoves(mother,father);
-        Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genom(moves, args.minMut(), args.maxMut()), allAnimalList.size()+1);
+        Animal child = new Animal(mother.getPosition(),args.energyTaken()*2,new Genome(moves, args.minMut(), args.maxMut()), allAnimalList.size()+1);
         mother.decreaseEnergy(args.energyTaken());
         father.decreaseEnergy(args.energyTaken());
         mother.addKid(child);
@@ -182,7 +182,7 @@ public abstract class AbstractMap implements IMap {
                 animal.setDeathDate(day);
                 deadAnimals++;
                 sumDaysOfDeadAnimals += animal.getAge();
-                genomDictionary.compute(animal.getGenom().getMoves(), (key, value) -> (value <= 1) ? null : value - 1);
+                genomeDictionary.compute(animal.getGenome().getMoves(), (key, value) -> (value <= 1) ? null : value - 1);
                 iterator.remove();
                 removeAnimal(animal);
             }
@@ -200,14 +200,14 @@ public abstract class AbstractMap implements IMap {
 
     public static MapDirection[] childMoves(Animal an1, Animal an2){
         Random random = new Random();
-        MapDirection[] newMoves = new MapDirection[an1.getGenom().getMoves().length];
-        MapDirection[] moves1 = an1.getGenom().getMoves();
-        MapDirection[] moves2 = an2.getGenom().getMoves();
+        MapDirection[] newMoves = new MapDirection[an1.getGenome().getMoves().size()];
+        MapDirection[] moves1 = an1.getGenome().getMoves().toArray(MapDirection[]::new);
+        MapDirection[] moves2 = an2.getGenome().getMoves().toArray(MapDirection[]::new);
         int en1 = an1.getEnergy();
         int en2 = an2.getEnergy();
         int side = random.nextInt(2);
         if (en1 > en2) {
-            int ind = (an1.getGenom().getMoves().length * en1 / (en1 + en2));
+            int ind = (an1.getGenome().getMoves().size() * en1 / (en1 + en2));
             if (side == 0) { // lewa strona en1
                 System.arraycopy(moves1, 0, newMoves, 0, ind);
                 System.arraycopy(moves2, ind, newMoves, ind, moves1.length - ind);
@@ -217,7 +217,7 @@ public abstract class AbstractMap implements IMap {
             }
         }
         else{
-            int ind = (an1.getGenom().getMoves().length * en2 / (en1 + en2));
+            int ind = (an1.getGenome().getMoves().size() * en2 / (en1 + en2));
             if (side == 0) { // lewa strona en2
                 System.arraycopy(moves2, 0, newMoves, 0, ind);
                 System.arraycopy(moves1, ind, newMoves, ind, moves1.length - ind);
@@ -229,10 +229,10 @@ public abstract class AbstractMap implements IMap {
         return newMoves;
     }
 
-    public MapDirection[] getMostPopularGenom(){
+    public List<MapDirection> getMostPopularGenome(){
         int k = 0;
-        MapDirection[] result = null;
-        for (Map.Entry<MapDirection[], Integer> entry : genomDictionary.entrySet()) {
+        List<MapDirection> result = null;
+        for (Map.Entry<List<MapDirection>, Integer> entry : genomeDictionary.entrySet()) {
             int frequency = entry.getValue();
             if (frequency > k) {
                 k = frequency;
@@ -333,7 +333,9 @@ public abstract class AbstractMap implements IMap {
     }
 
     public Animal getAnimal(Vector2d position){
-        return animals.get(position).get(0);
+        if (animals.get(position) != null)
+            return animals.get(position).get(0);
+        return null;
     }
 
     public int everAnimalCount(){
@@ -346,5 +348,9 @@ public abstract class AbstractMap implements IMap {
 
     public int getFreeFields(){
         return fields-grassFields;
+    }
+
+    public boolean positionContainsAnimal(Vector2d position, Animal animal){
+        return animals.get(position).contains(animal);
     }
 }

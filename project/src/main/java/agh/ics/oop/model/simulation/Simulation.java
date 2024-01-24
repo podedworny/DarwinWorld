@@ -7,11 +7,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Simulation implements Runnable{
     private final IMap map;
@@ -44,7 +41,7 @@ public class Simulation implements Runnable{
                 writer = new FileWriter(fileName);
                 csvWriter = new CSVWriter(writer);
 
-                String[] header = {"Day", "Number of animals", "Number of grass fields", "Most popular genom", "Average energy level", "Average child count", "Average dead animal age", "Number of animals ever lived"};
+                String[] header = {"Day", "Number of animals", "Number of grass fields", "Most popular genome", "Average energy level", "Average child count", "Average dead animal age", "Number of animals ever lived","Number of free fields"};
                 csvWriter.writeNext(header);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -65,29 +62,23 @@ public class Simulation implements Runnable{
         state = SimulationState.STOPED;
     }
 
-//    private final Lock mapLock = new ReentrantLock();
-//
-//    public Lock getMapLock() {
-//        return mapLock;
-//    }
 
     public void run(){
         while (true) {
             switch (state) {
                 case STARTED -> {
-
-//                    try {
                     if(saveData) {
                         try {
                             String[] data = {
                                     String.valueOf(map.getDay()),
                                     String.valueOf(map.numberOfAnimals()),
                                     String.valueOf(map.getGrassFields()),
-                                    Arrays.toString(map.getMostPopularGenom()),
+                                    map.getMostPopularGenome().toString(),
                                     String.valueOf(map.averageEnergyLevel()),
                                     String.valueOf(map.averageChildrenCount()),
                                     String.valueOf(map.averageAge()),
-                                    String.valueOf(map.everAnimalCount())
+                                    String.valueOf(map.everAnimalCount()),
+                                    String.valueOf(map.getFreeFields())
                             };
                             csvWriter.writeNext(data);
                             csvWriter.flush();
@@ -101,9 +92,6 @@ public class Simulation implements Runnable{
                         map.reproduce();
                         map.placeNewGrass(grassEachDay);
                         map.animalsNextDate();
-//                    } finally {
-//                        mapLock.unlock();
-//                    }
                     try {
                         Thread.sleep(coolDown);
                     }

@@ -8,9 +8,5 @@ public class RectangularMapTests {
     @Test
     public void Tests(){
 
-//        MapDirection[] ab = RectangularMap.childMoves(a,b);
-//        System.out.println(a.getGenom());
-//        System.out.println(b.getGenom());
-//        System.out.println(Arrays.toString(ab));
     }
 }

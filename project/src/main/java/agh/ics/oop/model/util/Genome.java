@@ -4,24 +4,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Genom {
-    private final MapDirection[] moves;
+public class Genome {
+    private final List<MapDirection> moves;
     private int index;
 
-    public Genom(int len) {
+    public Genome(int len) {
         Random random = new Random();
         MapDirection[] directions = MapDirection.values();
-        MapDirection[] moves = new MapDirection[len];
+        List<MapDirection> moves = new ArrayList<>();
         for (int i=0; i<len; i++){
-            moves[i] = directions[random.nextInt(directions.length)];
+            moves.add(directions[random.nextInt(directions.length)]);
         }
         this.moves = moves;
-        this.index = random.nextInt(moves.length);
+        this.index = random.nextInt(len);
     }
 
-    public Genom(MapDirection[] moves, int minMutation, int maxMutation){
+    public Genome(MapDirection[] moves, int minMutation, int maxMutation){
         Random random = new Random();
-        this.moves = moves;
+        this.moves = Arrays.asList(moves);
         this.index = random.nextInt(moves.length);
 
         if(minMutation != 0 && maxMutation != 0) mutation(minMutation, maxMutation);
@@ -30,11 +30,11 @@ public class Genom {
     private void mutation(int minMutation, int maxMutation){
         Random random = new Random();
         int mutationCount = (minMutation==maxMutation) ? minMutation : random.nextInt(maxMutation - minMutation) + minMutation;
-        List<Integer> indexes = IntStream.range(0,moves.length).boxed().collect(Collectors.toList());
+        List<Integer> indexes = IntStream.range(0,moves.size()).boxed().collect(Collectors.toList());
         Collections.shuffle(indexes);
         MapDirection[] directions = MapDirection.values();
         for (Integer index : indexes.subList(0,mutationCount)) {
-            moves[index] = directions[random.nextInt(directions.length)];
+            moves.set(index, directions[random.nextInt(directions.length)]);
         }
     }
 
@@ -42,17 +42,12 @@ public class Genom {
         Random random = new Random();
         if(random.nextInt(10)<8)
             nextIndexDefault();
-        else if(moves.length>1){
-            int newIndex;
-            do {
-                newIndex = random.nextInt(moves.length);
-            } while (newIndex == index);
-            index = newIndex;
-        }
+        index = random.nextInt(moves.size());
+
     }
 
     public void nextIndexDefault(){
-        if (index+1 == moves.length)
+        if (index+1 == moves.size())
             index = 0;
         else
             index++;
@@ -61,27 +56,25 @@ public class Genom {
         return index;
     }
 
-    public MapDirection[] getMoves() {
+    public List<MapDirection> getMoves() {
         return moves;
     }
 
     @Override
     public String toString() {
-        return Arrays.toString(moves);
+        return moves.toString();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Genom genom = (Genom) o;
-        return Arrays.equals(moves, genom.moves);
+        Genome genome = (Genome) o;
+        return Objects.equals(moves, genome.moves);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(index);
-        result = 31 * result + Arrays.hashCode(moves);
-        return result;
+        return Objects.hash(moves, index);
     }
 }

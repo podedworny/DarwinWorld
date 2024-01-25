@@ -1,3 +1,5 @@
+package agh.ics.oop.model;
+
 import agh.ics.oop.model.util.MapDirection;
 import agh.ics.oop.model.util.Vector2d;
 import org.junit.jupiter.api.Test;

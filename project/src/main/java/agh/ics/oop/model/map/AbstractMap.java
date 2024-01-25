@@ -179,7 +179,6 @@ public abstract class AbstractMap implements IMap {
         while (iterator.hasNext()) {
             Animal animal = iterator.next();
             if (animal.getEnergy() <= 0) {
-                animal.setDeathDate(day);
                 deadAnimals++;
                 sumDaysOfDeadAnimals += animal.getAge();
                 genomeDictionary.compute(animal.getGenome().getMoves(), (key, value) -> (value <= 1) ? null : value - 1);
@@ -263,8 +262,11 @@ public abstract class AbstractMap implements IMap {
     }
 
     public void animalsNextDate(){
-        for (Animal animal : animalList)
+        for (Animal animal : animalList){
             animal.nextDay();
+            if (animal.getEnergy() <= 0)
+                animal.setDeathDate(day);
+        }
     }
 
     public Vector2d getNewPosition(Vector2d position, MapDirection direction){
@@ -352,5 +354,13 @@ public abstract class AbstractMap implements IMap {
 
     public boolean positionContainsAnimal(Vector2d position, Animal animal){
         return animals.get(position).contains(animal);
+    }
+
+    public List<Animal> returnListOfAnimals(Vector2d position){
+        return animals.get(position);
+    }
+
+    public List<Animal> rAnimals(){
+        return animalList;
     }
 }

@@ -6,8 +6,8 @@ Celem projektu było stworzenie symulacji składającej się ze świata, po któ
 
 ## Wylosowane dodatkowe konfiguracje
 
-- [C] Mapa - Przepływy i odpływy
-- [3] Wariant zachowania - nieco szaleństwa
+- [C] Mapa - Przypływy i odpływy
+- [3] Wariant zachowania - Nieco szaleństwa
 
 
 ## Menu

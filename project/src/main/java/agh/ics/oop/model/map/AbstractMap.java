@@ -353,4 +353,8 @@ public abstract class AbstractMap implements IMap {
     public boolean positionContainsAnimal(Vector2d position, Animal animal){
         return animals.get(position).contains(animal);
     }
+
+    public List<Animal> returnListOfAnimals(Vector2d position){
+        return animals.get(position);
+    }
 }

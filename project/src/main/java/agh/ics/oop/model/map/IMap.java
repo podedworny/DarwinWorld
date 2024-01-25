@@ -19,6 +19,7 @@ public interface IMap {
     void reproduce();
 
     void placeNewGrass(int grassEachDay);
+    void placeAnimal(Animal animal);
 
     void animalsNextDate();
 
@@ -55,4 +56,7 @@ public interface IMap {
     int getID();
     int getFreeFields();
     boolean positionContainsAnimal(Vector2d position, Animal animal);
+    List<Animal> returnListOfAnimals(Vector2d position);
+    Animal animalCopulation(Animal mother, Animal father);
+    void move(Animal animal);
 }

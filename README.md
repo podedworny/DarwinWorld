@@ -55,4 +55,4 @@ Kiedy użytkownik zdecyduje się na zapisywanie danych do pliku CSV, stworzonie 
 ## Autorzy
 
 - [Piotr Andres](https://github.com/Apiotr16st)
-- [Paweł Podedworny](https://github.com/pabliqto)
+- [Paweł Podedworny](https://github.com/podedworny)
